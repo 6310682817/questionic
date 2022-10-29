@@ -1,0 +1,1 @@
+web: gunicorn questionic_project.wsgi

@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<div class="container">
+    <br>
+    <h1 style="text-align:center;">About Us</h1>
+    <br>
+    <div class="row g-0">
+        {% comment %} <div class="col-3"></div> {% endcomment %}
+        <div class="col-6">
+            <h2 style="text-align:center;">Member</h2>
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                          <th scope="col">ชื่อ-นามสกุล</th>
+                          <th scope="col">เลขทะเบียนนักศึกษา</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>พิตตินันท์ เลิศสิริมั่นคง</th>
+                            <td>6210612658</td>
+                        </tr>
+                        <tr>
+                            <td>นนทิชา หลิมศิโรรัตน์</th>
+                            <td>6310682585</td>
+                        </tr>
+                        <tr>
+                            <td>พิชญา อินทร์พิบูลย์</th>
+                            <td>6310682627</td>
+                        </tr>
+                        <tr>
+                            <td>ไพศาล แซ่โล</th>
+                            <td>6310682809</td>
+                        </tr>
+                        <tr>
+                            <td>นัฐวุฒิ พิชัยกาล</th>
+                            <td>6310682817</td>
+                        </tr>
+                    </tbody>
+                </table>
+              </div>
+        </div>
+        <div class="col-6">
+            <h2 style="text-align:center;">Link</h2>
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <tr>
+                        <th scope="row"><img src="https://cdn-icons-png.flaticon.com/512/733/733609.png" width="20" height="20"></th>
+                        <td><a href="https://github.com/6310682817/questionic.git"> Github Repoitory</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><img src="https://seeklogo.com/images/P/pivotal-tracker-logo-8D74DF11DA-seeklogo.com.png?v=637829618590000000" width="20" height="20"></th>
+                        <td><a href="https://www.pivotaltracker.com/n/projects/2608644"> pivotaltracker</a></td>
+                    </tr>
+                </table>
+              </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
