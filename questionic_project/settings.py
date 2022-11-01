@@ -119,11 +119,12 @@ import os
 # PROJECT_ROOT   =   os.path.join(os.path.abspath(__file__))
 # STATIC_ROOT  =   os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
+MEDIA_URL='/media/'
+# MEDIA_DIRS=[os.path.join(BASE_DIR, 'media')]
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 from pathlib import Path
-
 BASE_DIR = Path(__file__).resolve().parent
-
 STATIC_ROOT = BASE_DIR / 'questionic/static/'
 
 #  Add configuration for static files storage using whitenoise
