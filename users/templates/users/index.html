@@ -1,0 +1,9 @@
+{% extends 'users/layout.html' %}
+<!-- {% include 'questionic/layout.html' %} -->
+{% block body %}
+
+<h1>Hello {{ request.user.username }}</h1>
+
+<a href="{% url 'users:logout' %}"><button class="button">Logout</button></a>
+ 
+{% endblock %}
