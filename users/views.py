@@ -28,3 +28,6 @@ def logout_view(request):
     return render(request, 'users/login.html', {
         'message': 'you are logged out.'
     })
+
+def signup(request):
+    return render(request, 'users/signup.html')

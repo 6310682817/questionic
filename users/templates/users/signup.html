@@ -2,7 +2,8 @@
 {% block body %}
 
 <div id="box">
-    <h2>Login</h2>
+
+    <h1>Sign Up</h1>
 
     {% if message %}
         <div style="color: red">{{ message }}</div>
@@ -13,11 +14,9 @@
         <input type="text" name="username" placeholder="Username">
         <input type="password" name="password" placeholder="Password">
         <br>
-        <input type="submit" value="Login">
+        <input type="submit" value="work in process...">
     </form>
     <br>
-    <p>Don't have an account yet?</p>
-    <a href="{% url 'users:signup' %}"><p>Sign up</p></a>
 
 </div>
 
