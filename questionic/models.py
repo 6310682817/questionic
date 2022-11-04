@@ -18,6 +18,7 @@ class Account(models.Model):
     image_profile = models.ImageField(upload_to = user_directory_path, blank=True)
     fav_tag = models.ManyToManyField(Tag, blank=True, related_name="fav_tag")
     following = models.ManyToManyField('Account', blank=True, related_name="follower")
+    report = models.ManyToManyField('Account', blank=True, related_name="reporter")
 
     def __str__(self):
         return f"{self.user.username}"
