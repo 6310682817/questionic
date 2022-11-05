@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 
 def index(request):
@@ -30,4 +31,22 @@ def logout_view(request):
     })
 
 def signup(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        # cpassword = request.POST["password confirmation"]
+        email = request.POST["email"]
+
+        # if password != cpassword :
+        #     form = NameForm(request.POST)
+        #     return render({
+        #         'message': 'Password incorrect.'
+        #     })
+        # else :
+        user = User.objects.create_user(username, email, password)
+        user.first_name = request.POST["firstname"]
+        user.last_name = request.POST["lastname"]
+        user.save()
+        return render(request, 'users/login.html')
+
     return render(request, 'users/signup.html')
