@@ -1,0 +1,33 @@
+{% extends 'questionic/layout.html' %}
+{% block body %}
+
+<h1>สร้างโพสต์คำถาม</h1>
+
+<form action="{% url 'questionic:post_question' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="Tags">แท็ก :
+    <input type="text" name="Tags" value="{{Tags}}"><br><br>
+
+    <label for="Title">หัวข้อ :
+    <input type="text" name="Title" value="{{Title}}" required><br><br>
+
+    <label for="Detail">รายเอียด :
+    <input type="text" name="Detail" value="{{Detail}}" required><br><br>
+
+    <label for="Category">หมวดหมู่ :
+    <input type="text" name="Category" value="{{Category}}" required><br><br>
+
+    <label for="Grade">ระดับ :
+    <input type="text" name="Grade" value="{{Grade}}" required><br><br>
+    
+    <label for="">รูปภาพ (.png และ .jped เท่านั้น): 
+    <input type="file" name="images" value="{{images}}"  accept="image/png, image/jpeg" multiple><br><br>
+
+
+    <input type="submit" value="สร้างโพสต์">
+</form>
+
+
+
+
+{% endblock %}
