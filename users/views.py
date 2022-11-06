@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-
+from questionic.models import Account
 
 def index(request):
     if not request.user.is_authenticated:
@@ -47,6 +47,9 @@ def signup(request):
         user.first_name = request.POST["firstname"]
         user.last_name = request.POST["lastname"]
         user.save()
+
+        Account.objects.create(user=user)
+
         return render(request, 'users/login.html')
 
     return render(request, 'users/signup.html')
