@@ -13,6 +13,9 @@ def about(request):
     return render(request, 'questionic/about.html')
 
 def post_question(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('users:login'))
+        
     if request.method == 'POST':
         user = User.objects.get(username=request.user.username)
 
