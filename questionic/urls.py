@@ -10,6 +10,6 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     
     path('post_question/', views.post_question, name='post_question'),
-    # path('question/<int:question_id>', views.question, name='question'),
+    path('question/<int:question_id>', views.question, name='question'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
