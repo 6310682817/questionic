@@ -10,7 +10,7 @@
         <h5>{{question.detail}}<h5>
         <br>
         {%for img in list_images %}
-            <img src='{{img.image.url}}' width="100" height="150">
+            <img src='{{img.image.url}}' class="img-thumbnail" width="400" height="600">
         {%endfor%}
         <br><br><br>
         
@@ -30,11 +30,14 @@
             <h6>&nbsp {{myaccount}}</h6> 
         </div>
         <div style="margin-left: 55px;">
-            <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data">
+            <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
-                <textarea rows = "5" cols = "50" name = "Detail" placeholder="เขียนความคิดเห็น" required></textarea>
-                <input type="file" name="images" accept="image/png, image/jpeg" multiple>
-                <button type="submit" name="comment" value="{{question.id}}">ส่งความคิดเห็น</button>
+                <textarea class="form-control" rows = "5" cols = "50" name = "Detail" placeholder="เขียนความคิดเห็น" required></textarea>
+                <div class="invalid-feedback">
+                    กรุณาเขียนความคิดเห็น
+                </div>
+                <input class="form-control" type="file" name="images" accept="image/png, image/jpeg" multiple>
+                <button class="btn btn-secondary btn-sm" type="submit" name="comment" value="{{question.id}}">ส่งความคิดเห็น</button>
             </form>
         </div>
         <br><br><br>
@@ -50,24 +53,26 @@
                 <h5> {{answer.detail}}<h5>
                 
                 {%for image in image_answer%}
-                    <img src='{{image.image.url}}' width="100" height="150">
+                    <img src='{{image.image.url}}' class="img-thumbnail" width="400" height="600">
                 {%endfor%}
             </div>
             
             <br><br>
-            {% comment %} <button name="show_reply_button" onclick='show_reply('{{answer.id}}')'>ตอบกลับ</button> {% endcomment %}
-            {% comment %} hidden id='show_reply' + '{{answer.id}}' {% endcomment %}
-            <div style="margin-left: 75px;">
+            <button name="show_reply_button" onclick="show_reply('{{answer.id}}')">ตอบกลับ</button>
+            <div style="margin-left: 75px;" hidden id='show_reply{{answer.id}}'>
                 <div style='display: flex;'>
                     <img src="{{myaccount.image_profile.url}}" width="50" height="50">
                     <h6>&nbsp {{myaccount}}</h6> 
                 </div>
                 <div style="margin-left: 55px;">
-                    <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data">
+                    <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                         {% csrf_token %}
-                        <textarea rows = "5" cols = "50" name = "Detail" placeholder="เขียนตอบกลับ" required></textarea>
-                        <input type="file" name="images" accept="image/png, image/jpeg" multiple>
-                        <button type="submit" name="reply" value="{{answer.id}}">ส่งตอบกลับ</button>
+                        <textarea class="form-control" rows = "5" cols = "50" name = "Detail" placeholder="เขียนตอบกลับ" required></textarea>
+                        <div class="invalid-feedback">
+                            กรุณาเขียนตอบกลับ
+                          </div>
+                        <input class="form-control" type="file" name="images" accept="image/png, image/jpeg" multiple>
+                        <button class="btn btn-secondary btn-sm" type="submit" name="reply" value="{{answer.id}}">ส่งตอบกลับ</button>
                     </form>
                 </div>
             </div>
@@ -86,7 +91,7 @@
                             <h5>{{reply.detail}}<h5>
                             
                                 {%for image in image_reply%}
-                                <img src='{{image.image.url}}' width="50" height="75">
+                                <img src='{{image.image.url}}' class="img-thumbnail" width="400" height="600">
                             {%endfor%}
                         </div>
                     </div>
@@ -109,6 +114,25 @@
         reply.hidden = false;
         console.log(id)
     }
+
+    (() => {
+        'use strict'
+    
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+    
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+          form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+    
+            form.classList.add('was-validated')
+          }, false)
+        })
+      })()
 </script>
 
 

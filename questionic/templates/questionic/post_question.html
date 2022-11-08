@@ -7,20 +7,24 @@
 
         <h1>สร้างโพสต์คำถาม</h1>
 
-        <form action="{% url 'questionic:post_question' %}" method="post" enctype="multipart/form-data">
+        <form action="{% url 'questionic:post_question' %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
             {% csrf_token %}
-            <label for="Tags">แท็ก :
-            <input type="text" name="Tags" ><br><br>
-
-            <label for="Title">หัวข้อ(*) :
-            <input type="text" name="Title" placeholder="หัวข้อ" required><br><br>
-
-            <h6>รายละเอียด(*) : </h6>
-            <textarea rows = "5" cols = "50" name = "Detail" placeholder="รายละเอียด" required></textarea>
+            
+            <label for="Title">หัวข้อ :
+            <input class="form-control" type="text" name="Title" placeholder="หัวข้อ" required>
+            <div class="invalid-feedback">
+              กรุณาใส่หัวข้อ
+            </div>
+            <br><br>
+            <h6>รายละเอียด : </h6>
+            <textarea class="form-control" rows = "5" cols = "50" name = "Detail" placeholder="รายละเอียด" required></textarea>
+            <div class="invalid-feedback">
+              กรุณาใส่รายละเอียด
+            </div>
             <br><br>
 
-            <label for="Category">หมวดหมู่(*) :
-            <select name="Category" required> 
+            <label for="Category">หมวดหมู่ :
+            <select name="Category" class="form-select" required> 
                 <option value="">--กรุณาเลือกหมวดหมู่--</option>
                 <option value="คณิตศาสตร์">คณิตศาสตร์</option>
                 <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
@@ -33,10 +37,13 @@
                 <option value="คอมพิวเตอร์">คอมพิวเตอร์</option>
                 <option value="อื่นๆ">อื่นๆ</option>
               </select>
+              <div class="invalid-feedback">
+                กรุณาใส่เลือกหมวดหมู่
+              </div>
             <br><br>
 
-            <label for="Grade">ระดับชั้น(*) :
-            <select name="Grade" required> 
+            <label for="Grade">ระดับชั้น :
+            <select name="Grade" class="form-select" required> 
                 <option value="">--กรุณาเลือกระดับชั้น--</option>
                 <option value="ป.1">ป.1</option>
                 <option value="ป.2">ป.2</option>
@@ -51,19 +58,43 @@
                 <option value="ม.5">ม.5</option>
                 <option value="ม.6">ม.6</option>
               </select>
+              <div class="invalid-feedback">
+                กรุณาใส่เลือกระดับชั้น
+              </div>
             <br><br>
 
+            <label for="Tags">แท็ก :
+            <input class="form-control" type="text" name="Tags" ><br><br>
+
             <label for="">รูปภาพ (.png และ .jped เท่านั้น): 
-            <input type="file" name="images" accept="image/png, image/jpeg" multiple><br><br>
+            <input class="form-control" type="file" name="images" accept="image/png, image/jpeg" multiple><br><br>
 
 
-            <input type="submit" value="สร้างโพสต์">
+            <input class="btn btn-secondary btn-sm" type="submit" value="สร้างโพสต์">
         </form>
     </div>
     <div class="col-3"></div>
 </div>
 
+<script>
+  (() => {
+    'use strict'
 
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation')
 
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>
 
 {% endblock %}
