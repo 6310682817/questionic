@@ -35,8 +35,9 @@ def post_question(request):
     return render(request, 'questionic/post_question.html')
 
 def question(request, question_id):
+    user = User.objects.get(username=request.user.username)
+    myaccount = Account.objects.get(user=user)
     if request.method == 'POST':
-        user = User.objects.get(username=request.user.username)
         detail = request.POST['Detail']
         images = request.FILES.getlist('images')
         if  request.POST.get('comment'):
@@ -51,7 +52,6 @@ def question(request, question_id):
             reply_answer = ReplyAnswer.objects.create(detail = detail, from_answer=from_answer, reply_answerer=reply_answerer)
             for image in images:
                 ReplyAnswerFile.objects.create(reply_answer=reply_answer, image=image)
-
     # Question
     question = Question.objects.get(id=question_id)
     list_images = QuestionFile.objects.filter(question=question)
@@ -75,6 +75,7 @@ def question(request, question_id):
     return render(request, 'questionic/question.html', {
         'question': question,
         'list_images': list_images,
+        'myaccount': myaccount,
 
         'dict_answer_image': dict_answer_image,
         'dict_reply_image': dict_reply_image

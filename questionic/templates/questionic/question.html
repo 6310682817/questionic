@@ -4,61 +4,93 @@
 <div class="row g-0">
     <div class="col-3"></div>
     <div class="col-6">
-        <h1>question</h1>
-
-        <h4>หัวข้อ: {{question.title}}<h4>
-        <h4>รายละเอียด: {{question.detail}}<h4>
-        <h4>หมวดหมู่: {{question.category}}<h4>
-        <h4>ระดับ: {{question.grade}}<h4>
-        <h4>เวลาโพสต์: {{question.date_asked}}<h4>
-        <h4>ผู้โพสต์: {{question.asker}}<h4>
-
-        {%if list_images%}
-            <h4>รูปภาพ: <h4>        
-        {%endif%}
-
+        <br>
+        <p>Questionic > ระดับ: {{question.grade}} > หมวดหมู่: {{question.category}} <p>
+        <h1>{{question.title}}<h1>
+        <h5>{{question.detail}}<h5>
+        <br>
         {%for img in list_images %}
             <img src='{{img.image.url}}' width="100" height="150">
         {%endfor%}
-        <br><br><br><br>
-        <h4>ความคิดเห็น<h4>
-        <br><br><br><br>
-
-        <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="Detail">เขียนความคิดเห็น :
-            <input type="text" name="Detail" value="{{Detail}}" required>
-            
-            <input type="file" name="images" value="{{images}}"  accept="image/png, image/jpeg" multiple>
-            <button type="submit" name="comment" value="{{question.id}}">ส่งความคิดเห็น</button>
-        </form>
         <br><br><br>
-        {%for answer, image_answer in dict_answer_image.items %}
-            <h5>ความคิดเห็นของ {{answer.answerer}} : <h5>
-            <h5>รายละเอียด: {{answer.detail}}<h5>
-            <h5>เวลาตอบ: {{answer.date_answered}}<h5>
-            
-            {%for image in image_answer%}
-                <img src='{{image.image.url}}' width="100" height="150">
-            {%endfor%}
+        
+        <div style='display: flex;'>
+            <img src="{{question.asker.image_profile.url}}" width="50" height="50">
+            <h6>&nbsp {{question.asker}} <br>&nbsp {{question.date_asked}}</h6> 
+
+        </div>
+        <hr>
+        
+        <br><br><br><br>
+        <h4>แสดงความคิดเห็น<h4>
+        <br><br><br><br>
+        
+        <div style='display: flex;'>
+            <img src="{{myaccount.image_profile.url}}" width="50" height="50">
+            <h6>&nbsp {{myaccount}}</h6> 
+        </div>
+        <div style="margin-left: 55px;">
             <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <label for="Detail">เขียนตอบกลับ :
-                <input type="text" name="Detail" value="{{Detail}}" required>
-                <input type="file" name="images" value="{{images}}"  accept="image/png, image/jpeg" multiple>
-                <button type="submit" name="reply" value="{{answer.id}}">ส่งตอบกลับ</button>
+                <textarea rows = "5" cols = "50" name = "Detail" placeholder="เขียนความคิดเห็น" required></textarea>
+                <input type="file" name="images" accept="image/png, image/jpeg" multiple>
+                <button type="submit" name="comment" value="{{question.id}}">ส่งความคิดเห็น</button>
             </form>
+        </div>
+        <br><br><br>
+        <h4>ความคิดเห็น<h4>
+        <br>
+        {%for answer, image_answer in dict_answer_image.items %}
+            <div style='display: flex;'>
+                <img src="{{answer.answerer.image_profile.url}}" width="50" height="50">
+                <h6>&nbsp&nbsp{{answer.answerer}} &nbsp&nbsp&nbsp {{answer.date_answered}}<h6>
+            </div>
+
+            <div style="margin-left: 55px;">
+                <h5> {{answer.detail}}<h5>
+                
+                {%for image in image_answer%}
+                    <img src='{{image.image.url}}' width="100" height="150">
+                {%endfor%}
+            </div>
+            
+            <br><br>
+            {% comment %} <button name="show_reply_button" onclick='show_reply('{{answer.id}}')'>ตอบกลับ</button> {% endcomment %}
+            {% comment %} hidden id='show_reply' + '{{answer.id}}' {% endcomment %}
+            <div style="margin-left: 75px;">
+                <div style='display: flex;'>
+                    <img src="{{myaccount.image_profile.url}}" width="50" height="50">
+                    <h6>&nbsp {{myaccount}}</h6> 
+                </div>
+                <div style="margin-left: 55px;">
+                    <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <textarea rows = "5" cols = "50" name = "Detail" placeholder="เขียนตอบกลับ" required></textarea>
+                        <input type="file" name="images" accept="image/png, image/jpeg" multiple>
+                        <button type="submit" name="reply" value="{{answer.id}}">ส่งตอบกลับ</button>
+                    </form>
+                </div>
+            </div>
+            <br>
             {%for ans, reply_answer_image in dict_reply_image.items %}
                 {%if answer.id is ans.id %}
                     {%for reply, image_reply in reply_answer_image.items %}
-                        <h6>---------------การตอบกลับของความคิดเห็นของ {{ans.answerer}} <h6>
-                        <h6>---------------การตอบกลับของ {{reply.reply_answerer}} <h6>
-                        <h6>---------------รายละเอียดของการตอบกลับ: {{reply.detail}}<h6>
-                        <h6>---------------เวลาตอบกลับ: {{reply.date_reply_answered}}<h6>
-                        {%for image in image_reply%}
-                            <img src='{{image.image.url}}' width="50" height="75">
-                        {%endfor%}
 
+                    <div style="margin-left: 75px;">
+                        <div style='display: flex;'>
+                            <img src="{{reply.reply_answerer.image_profile.url}}" width="50" height="50">
+                            <h6>&nbsp&nbsp {{reply.reply_answerer}} &nbsp&nbsp&nbsp {{reply.date_reply_answered}}<h6>
+                        </div>
+                        
+                        <div style="margin-left: 55px;">
+                            <h5>{{reply.detail}}<h5>
+                            
+                                {%for image in image_reply%}
+                                <img src='{{image.image.url}}' width="50" height="75">
+                            {%endfor%}
+                        </div>
+                    </div>
+                    <br>
                     {%endfor%}
                 {%endif%}
             {%endfor%}
@@ -71,7 +103,13 @@
 </div>
 
 
-
+<script>
+    function show_reply(id){
+        let reply = document.getElementById("show_reply" + id);
+        reply.hidden = false;
+        console.log(id)
+    }
+</script>
 
 
 {% endblock %}

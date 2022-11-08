@@ -10,22 +10,51 @@
         <form action="{% url 'questionic:post_question' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="Tags">แท็ก :
-            <input type="text" name="Tags" value="{{Tags}}"><br><br>
+            <input type="text" name="Tags" ><br><br>
 
             <label for="Title">หัวข้อ(*) :
-            <input type="text" name="Title" value="{{Title}}" required><br><br>
+            <input type="text" name="Title" placeholder="หัวข้อ" required><br><br>
 
-            <label for="Detail">รายละเอียด(*) :
-            <input type="text" name="Detail" value="{{Detail}}" required><br><br>
+            <h6>รายละเอียด(*) : </h6>
+            <textarea rows = "5" cols = "50" name = "Detail" placeholder="รายละเอียด" required></textarea>
+            <br><br>
 
             <label for="Category">หมวดหมู่(*) :
-            <input type="text" name="Category" value="{{Category}}" required><br><br>
+            <select name="Category" required> 
+                <option value="">--กรุณาเลือกหมวดหมู่--</option>
+                <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
+                <option value="ภาษาและวัฒนธรรมไทย">ภาษาและวัฒนธรรมไทย</option>
+                <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                <option value="สังคมศึกษา">สังคมศึกษา</option>
+                <option value="วิชาชีพ">วิชาชีพ</option>
+                <option value="พลศึกษา">พลศึกษา</option>
+                <option value="ศิลปะ">ศิลปะ</option>
+                <option value="คอมพิวเตอร์">คอมพิวเตอร์</option>
+                <option value="อื่นๆ">อื่นๆ</option>
+              </select>
+            <br><br>
 
-            <label for="Grade">ระดับ(*) :
-            <input type="text" name="Grade" value="{{Grade}}" required><br><br>
-            
+            <label for="Grade">ระดับชั้น(*) :
+            <select name="Grade" required> 
+                <option value="">--กรุณาเลือกระดับชั้น--</option>
+                <option value="ป.1">ป.1</option>
+                <option value="ป.2">ป.2</option>
+                <option value="ป.3">ป.3</option>
+                <option value="ป.4">ป.4</option>
+                <option value="ป.5">ป.5</option>
+                <option value="ป.6">ป.6</option>
+                <option value="ม.1">ม.1</option>
+                <option value="ม.2">ม.2</option>
+                <option value="ม.3">ม.3</option>
+                <option value="ม.4">ม.4</option>
+                <option value="ม.5">ม.5</option>
+                <option value="ม.6">ม.6</option>
+              </select>
+            <br><br>
+
             <label for="">รูปภาพ (.png และ .jped เท่านั้น): 
-            <input type="file" name="images" value="{{images}}"  accept="image/png, image/jpeg" multiple><br><br>
+            <input type="file" name="images" accept="image/png, image/jpeg" multiple><br><br>
 
 
             <input type="submit" value="สร้างโพสต์">
@@ -33,6 +62,8 @@
     </div>
     <div class="col-3"></div>
 </div>
+
+
 
 
 {% endblock %}
