@@ -1,0 +1,11 @@
+{% include 'questionic/layout.html' %}
+{% block body %}
+
+<h1>{{ username }}</h1>
+<p>((page details in process...))</p>
+
+<a href="{% url 'users:follow' userf=username %}"><button class="button">Follow</button></a>
+
+
+ 
+{% endblock %}

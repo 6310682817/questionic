@@ -62,3 +62,22 @@ def signup(request):
         return render(request, 'users/login.html')
 
     return render(request, 'users/signup.html')
+
+def userprofile(request, username):
+    return render(request, 'users/userprofile.html', {
+        "username" : username
+    })
+
+
+def follow(request, userf):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('users:login'))
+    
+    user_f = User.objects.get(username=userf)
+    userfollow = Account.objects.get(user=user_f.id)
+    
+    username = Account.objects.get(user=request.user.id)
+    username.following.add(userfollow)
+    return render(request, 'users/userprofile.html', {
+        "username" : userf
+    })
