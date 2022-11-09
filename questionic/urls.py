@@ -8,8 +8,9 @@ app_name = 'questionic'
 urlpatterns = [
     path('', views.index, name='index'),
     path('about/', views.about, name='about'),
-    
     path('post_question/', views.post_question, name='post_question'),
     path('question/<int:question_id>', views.question, name='question'),
+    path('notification/', views.notification, name='notification'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

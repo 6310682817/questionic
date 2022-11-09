@@ -6,6 +6,7 @@
         <meta charset="utf-8">
         <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1763/1763016.png">
         <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+        <link rel="stylesheet" href="{% static 'css/notification.css' %}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
@@ -24,6 +25,11 @@
                <li><a href="{% url 'questionic:about' %}">About</a></li>
                <li><a href="{% url 'users:index' %}">Account</a></li>
                <li><a href="{% url 'questionic:post_question' %}">Post Question</a></li>
+               {% if notification_alert and user.is_authenticated %}
+                <li class="noti"><a class="notification" href="{% url 'questionic:notification' %}"><img class="positon:absolute;" src="{% static 'assets/noti_icon.png' %}" width="25px" height="25px" draggable="false"><span class="badge">{{notification_alert}}</span></a></li>
+                {% elif user.is_authenticated %}
+                <li class="noti"><a href="{% url 'questionic:notification' %}"><img src="{% static 'assets/noti_icon.png' %}" width="25px" height="25px" draggable="false"></a></li>
+                {% endif %}
             </ul>
 
             <label for="click" class="menu-btn">

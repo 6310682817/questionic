@@ -17,6 +17,7 @@ class Account(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     image_profile = models.ImageField(upload_to = user_directory_path, blank=True)
     fav_tag = models.ManyToManyField(Tag, blank=True, related_name="fav_tag")
+    fav_question = models.ManyToManyField(Tag, blank=True, related_name="fav_question")
     following = models.ManyToManyField('Account', blank=True, related_name="follower")
     report = models.ManyToManyField('Account', blank=True, related_name="reporter")
 
@@ -79,3 +80,15 @@ def reply_answer_directory_path(instance, filename):
 class ReplyAnswerFile(models.Model):
     image = models.FileField(upload_to = reply_answer_directory_path, blank=True)
     reply_answer = models.ForeignKey(ReplyAnswer, on_delete=models.CASCADE, related_name='images')
+
+class Notification(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='notifications')
+    follow_notification = models.ManyToManyField(Question, blank=True, related_name='noti_follow')
+    reply_notification = models.ManyToManyField(Answer, blank=True, related_name='noti_reply')
+    follow_notification_count = models.PositiveIntegerField(default=0)
+    reply_notification_count = models.PositiveIntegerField(default=0)
+
+    def alert_reply_notification(self):
+        if self.reply_notification.count() > self.reply_notification_count:
+            return self.reply_notification.count() - self.reply_notification_count
+        return 0

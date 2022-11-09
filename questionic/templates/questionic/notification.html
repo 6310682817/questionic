@@ -1,0 +1,30 @@
+{% extends 'questionic/layout.html' %}
+{% block body %}
+
+
+<div class="container">
+    <div class="row g-0">
+        <div class="col-3"></div>
+        <div class="col-6"><br><h1>Notifications</h1>
+            {% for answer in notifications %}
+                    <p>
+                        คำตอบ
+                        {% comment %} <a href="{% url "questionic:question" question.id%}">หัวข้อ : {{question.title}}</a> {% endcomment %}
+                        <br>
+                        รายละเอียด : {{answer.detail}}
+                        <br>
+                        เวลาโพสต์ : {{answer.date_answered}}
+                        <br>
+                        {% comment %} <a href="{% url "questionic:profile" question.asker.user.username%}">ผู้ถาม : {{question.asker.user.username}}</a> {% endcomment %}
+                        ผู้ตอบ : {{answer.answerer.user.username}}
+                        <br>
+                        _____________________________
+                    </p>
+            {% endfor %}
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+
+
+{% endblock %}

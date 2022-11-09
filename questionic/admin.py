@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Tag, Account, Question, Answer, ReplyAnswer
-from .models import QuestionFile, AnswerFile, ReplyAnswerFile
+from .models import QuestionFile, AnswerFile, ReplyAnswerFile, Notification
 
 # Register your models here.
 
@@ -9,7 +9,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class AccountAdmin(admin.ModelAdmin):
     list_display = ("user", "image_profile")
-    filter_horizontal = ("fav_tag", "following", "report")
+    filter_horizontal = ("fav_tag", "following", "report", "fav_question")
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ("title", "detail", "category", "grade", "date_asked", "asker")
@@ -32,6 +32,10 @@ class AnswerFileAdmin(admin.ModelAdmin):
 class ReplyAnswerFileAdmin(admin.ModelAdmin):
     list_display = ("image", "reply_answer")
 
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ("account", "follow_notification_count", "reply_notification_count")
+    filter_horizontal = ("follow_notification", "reply_notification")
+
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Question, QuestionAdmin)
@@ -40,3 +44,4 @@ admin.site.register(ReplyAnswer, ReplyAnswerAdmin)
 admin.site.register(QuestionFile, QuestionFileAdmin)
 admin.site.register(AnswerFile, AnswerFileAdmin)
 admin.site.register(ReplyAnswerFile, ReplyAnswerFileAdmin)
+admin.site.register(Notification, NotificationAdmin)

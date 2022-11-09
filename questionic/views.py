@@ -1,23 +1,46 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .models import Question, Account, QuestionFile, Answer, AnswerFile, ReplyAnswer, ReplyAnswerFile
+from .models import Question, Account, QuestionFile, Answer, AnswerFile
+from .models import ReplyAnswer, ReplyAnswerFile, Notification
 from django.contrib.auth.models import User
 
 # Create your views here.
 
 def index(request):
-    return render(request, 'questionic/index.html')
+    if not request.user.is_authenticated:
+        return render(request, 'questionic/index.html')
+
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+
+    notification_alert = notification.alert_reply_notification()
+    return render(request, 'questionic/index.html', {
+        "notification_alert": notification_alert
+    })
 
 def about(request):
-    return render(request, 'questionic/about.html')
+    if not request.user.is_authenticated:
+        return render(request, 'questionic/about.html')
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+
+    notification_alert = notification.alert_reply_notification()
+    return render(request, 'questionic/about.html', {
+        "notification_alert": notification_alert
+    })
 
 def post_question(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('users:login'))
-        
+    
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+
     if request.method == 'POST':
-        user = User.objects.get(username=request.user.username)
 
         # tags = request.POST['Tags']
         title = request.POST['Title']
@@ -27,17 +50,24 @@ def post_question(request):
         asker = Account.objects.get(user=user)
         images = request.FILES.getlist('images')
 
-        question=Question.objects.create(title = title, detail = detail,  category=category, grade=grade, asker=asker)
+        question = Question.objects.create(title=title, detail=detail,  category=category, grade=grade, asker=asker)
 
         for img in images:
             QuestionFile.objects.create(question=question, image=img)
         return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))    
-    return render(request, 'questionic/post_question.html')
+    return render(request, 'questionic/post_question.html', {
+        "notification_alert": notification_alert
+    })
 
 def question(request, question_id):
     user = User.objects.get(username=request.user.username)
     myaccount = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=myaccount)
+
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('users:login'))
+
         detail = request.POST['Detail']
         images = request.FILES.getlist('images')
         if  request.POST.get('comment'):
@@ -46,6 +76,10 @@ def question(request, question_id):
             answer=Answer.objects.create(detail = detail, from_question=from_question, answerer=answerer)
             for image in images:
                 AnswerFile.objects.create(answer=answer, image=image)
+            
+            if not from_question.asker == answerer:
+                Notification.objects.get(account=from_question.asker).reply_notification.add(answer)
+                
         else:
             from_answer = Answer.objects.get(id=request.POST['reply'])
             reply_answerer = Account.objects.get(user=user)
@@ -71,12 +105,27 @@ def question(request, question_id):
             replyanswerfile = ReplyAnswerFile.objects.filter(reply_answer=reans)
             dict_replyanswer.update({reans: replyanswerfile})
         dict_reply_image.update({ans: dict_replyanswer})
- 
+    
+    notification_alert = notification.alert_reply_notification()
     return render(request, 'questionic/question.html', {
         'question': question,
         'list_images': list_images,
         'myaccount': myaccount,
-
         'dict_answer_image': dict_answer_image,
-        'dict_reply_image': dict_reply_image
+        'dict_reply_image': dict_reply_image,
+        'notification_alert': notification_alert
+    })
+
+def notification(request):
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+
+    notification.reply_notification_count = notification.reply_notification.count()
+    notification.save()
+    notification_alert = notification.alert_reply_notification()
+    notifications = notification.reply_notification.all().order_by('-date_answered')
+    return render(request, 'questionic/notification.html', {
+        "notification_alert": notification_alert,
+        "notifications": notifications
     })

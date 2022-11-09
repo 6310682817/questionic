@@ -3,12 +3,20 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-from questionic.models import Account
+from questionic.models import Account, Notification
 
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('users:login'))
-    return render(request, 'users/index.html')
+
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+
+    notification_alert = notification.alert_reply_notification()
+    return render(request, 'users/index.html', {
+        'notification_alert': notification_alert
+    })
 
 def login_view(request):
     if request.method == "POST":
@@ -48,7 +56,8 @@ def signup(request):
         user.last_name = request.POST["lastname"]
         user.save()
 
-        Account.objects.create(user=user)
+        account = Account.objects.create(user=user)
+        Notification.objects.create(account=account)
 
         return render(request, 'users/login.html')
 
