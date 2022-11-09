@@ -54,7 +54,9 @@ def post_question(request):
 
         for img in images:
             QuestionFile.objects.create(question=question, image=img)
-        return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))    
+        return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))  
+        
+    notification_alert = notification.alert_reply_notification()  
     return render(request, 'questionic/post_question.html', {
         "notification_alert": notification_alert
     })
