@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.models import User
 from questionic.models import Account, Notification
@@ -64,6 +64,9 @@ def signup(request):
     return render(request, 'users/signup.html')
 
 def userprofile(request, username):
+    account = User.objects.filter(username=username).count()
+    if account == 0 :
+        return HttpResponse('User Not Found.', status = 400)
     return render(request, 'users/userprofile.html', {
         "username" : username
     })
