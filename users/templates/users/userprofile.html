@@ -2,6 +2,9 @@
 {% block body %}
 
 <h1>{{ username }}</h1>
+
+<p>following : {{ following }}</p>
+<p>follower : {{ follower }}</p>
 <p>((page details in process...))</p>
 
 <a href="{% url 'users:follow' userf=username %}"><button class="button">Follow</button></a>

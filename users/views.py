@@ -40,17 +40,33 @@ def logout_view(request):
 
 def signup(request):
     if request.method == "POST":
+        formu = User(request.POST)
+
         username = request.POST["username"]
+        if username == '' :
+            umessage = 'please enter username.'
+        else :
+            account = User.objects.filter(username=username).count()
+            if account != 0 :
+                umessage = 'this username is already taken.'
+        
+
         password = request.POST["password"]
-        # cpassword = request.POST["password confirmation"]
+        if password == '' :
+            pmessage = 'please enter password.'
+        
+        cpassword = request.POST["password confirmation"]
+        if password != cpassword :
+            pmessage = 'confirm password is not same as password.'
+        
+        if umessage != '' or pmessage != '':
+            return render(request, 'users/signup.html', {
+                'usermessage': umessage,
+                'passwordmessage': pmessage
+            })
+
         email = request.POST["email"]
 
-        # if password != cpassword :
-        #     form = NameForm(request.POST)
-        #     return render({
-        #         'message': 'Password incorrect.'
-        #     })
-        # else :
         user = User.objects.create_user(username, email, password)
         user.first_name = request.POST["firstname"]
         user.last_name = request.POST["lastname"]
@@ -66,9 +82,16 @@ def signup(request):
 def userprofile(request, username):
     account = User.objects.filter(username=username).count()
     if account == 0 :
-        return HttpResponse('User Not Found.', status = 400)
+            return HttpResponse('User Not Found.', status = 400)
+
+    user = User.objects.get(username=username)
+    following = Account.objects.filter(follower=user.id).count()
+    follower = Account.objects.filter(following=user.id).count()
+    
     return render(request, 'users/userprofile.html', {
-        "username" : username
+        "username" : username,
+        "following" : following,
+        "follower" : follower
     })
 
 
@@ -81,6 +104,4 @@ def follow(request, userf):
     
     username = Account.objects.get(user=request.user.id)
     username.following.add(userfollow)
-    return render(request, 'users/userprofile.html', {
-        "username" : userf
-    })
+    return HttpResponseRedirect(reverse('users:userprofile', args=(userf,)))

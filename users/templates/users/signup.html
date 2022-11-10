@@ -13,20 +13,32 @@
     <div id="box2">
         <form action="{% url 'users:signup' %}" method="post">
             {% csrf_token %}
+            {{ formu }}
+            
             <!-- <input type="image"> -->
+
             <p2>Username*</p2>
+            {% if usermessage %}
+                <div style="color: red">{{ usermessage }}</div>
+            {% endif %}
             <input type="text" name="username" placeholder="Username">
-            <br>
-            <br>
+            
+            <br><br>
+
             <p2>Password*</p2>
+            {% if passwordmessage %}
+                <div style="color: red">{{ passwordmessage }}</div>
+            {% endif %}
             <input type="password" name="password" placeholder="Password">
-            <!-- <input type="password" name="password confirmation" placeholder="Password confirmation"> -->
-            <br>
-            <br>
+            <input type="password" name="password confirmation" placeholder="Password confirmation">
+            
+            <br><br>
+
             <p2>Email</p2>
             <input type="email" name="email" placeholder="email">
-            <br>
-            <br>
+            
+            <br><br>
+
             <p2>Name</p2>
             <input type="text" name="firstname" placeholder="First name">
             <input type="text" name="lastname" placeholder="Last name">
