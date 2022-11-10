@@ -40,7 +40,8 @@ def logout_view(request):
 
 def signup(request):
     if request.method == "POST":
-        formu = User(request.POST)
+        umessage = ''
+        pmessage = ''
 
         username = request.POST["username"]
         if username == '' :
