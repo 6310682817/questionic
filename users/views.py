@@ -72,8 +72,11 @@ def signup(request):
         user.first_name = request.POST["firstname"]
         user.last_name = request.POST["lastname"]
         user.save()
-
+        
         account = Account.objects.create(user=user)
+        account.image_profile = '../static/assets/default_profile/profile-pic ('+ str(int(account.id) % 16)+').png'
+        account.save()
+
         Notification.objects.create(account=account)
 
         return render(request, 'users/login.html')
