@@ -67,37 +67,39 @@ def post_question(request):
     })
 
 def question(request, question_id):
-    # Question
-    question = Question.objects.get(id=question_id)
-    list_images = QuestionFile.objects.filter(question=question)
-
-    #Comment
-    list_answer = Answer.objects.filter(from_question=question)
-
-    dict_answer_image = {}
-    dict_reply_image = {}
-    for ans in list_answer:
-        answerfile = AnswerFile.objects.filter(answer=ans)
-        dict_answer_image.update({ans: answerfile})
-
-        replyanswer = ReplyAnswer.objects.filter(from_answer=ans)
-        dict_replyanswer = {}
-        for reans in replyanswer:
-            replyanswerfile = ReplyAnswerFile.objects.filter(reply_answer=reans)
-            dict_replyanswer.update({reans: replyanswerfile})
-        dict_reply_image.update({ans: dict_replyanswer})
-
+   
     if not request.user.is_authenticated:
+        # Question
+        question = Question.objects.get(id=question_id)
+        list_images = QuestionFile.objects.filter(question=question)
+
+        #Comment
+        list_answer = Answer.objects.filter(from_question=question)
+
+        dict_answer_image = {}
+        dict_reply_image = {}
+        for ans in list_answer:
+            answerfile = AnswerFile.objects.filter(answer=ans)
+            dict_answer_image.update({ans: answerfile})
+
+            replyanswer = ReplyAnswer.objects.filter(from_answer=ans)
+            dict_replyanswer = {}
+            for reans in replyanswer:
+                replyanswerfile = ReplyAnswerFile.objects.filter(reply_answer=reans)
+                dict_replyanswer.update({reans: replyanswerfile})
+            dict_reply_image.update({ans: dict_replyanswer})
         return render(request, 'questionic/question.html', {
         'question': question,
         'list_images': list_images,
         'dict_answer_image': dict_answer_image,
         'dict_reply_image': dict_reply_image,
     })
+
     user = User.objects.get(username=request.user.username)
     myaccount = Account.objects.get(user=user)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=myaccount)
+    notification_alert = notification.alert_reply_notification()
 
     if request.method == 'POST':
         if not request.user.is_authenticated:
@@ -122,8 +124,26 @@ def question(request, question_id):
             for image in images:
                 ReplyAnswerFile.objects.create(reply_answer=reply_answer, image=image)
     
+     # Question
+    question = Question.objects.get(id=question_id)
+    list_images = QuestionFile.objects.filter(question=question)
+
+    #Comment
+    list_answer = Answer.objects.filter(from_question=question)
+
+    dict_answer_image = {}
+    dict_reply_image = {}
+    for ans in list_answer:
+        answerfile = AnswerFile.objects.filter(answer=ans)
+        dict_answer_image.update({ans: answerfile})
+
+        replyanswer = ReplyAnswer.objects.filter(from_answer=ans)
+        dict_replyanswer = {}
+        for reans in replyanswer:
+            replyanswerfile = ReplyAnswerFile.objects.filter(reply_answer=reans)
+            dict_replyanswer.update({reans: replyanswerfile})
+        dict_reply_image.update({ans: dict_replyanswer})
     
-    notification_alert = notification.alert_reply_notification()
     return render(request, 'questionic/question.html', {
         'question': question,
         'list_images': list_images,
