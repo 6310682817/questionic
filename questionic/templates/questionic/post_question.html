@@ -1,80 +1,90 @@
 {% extends 'questionic/layout.html' %}
 {% block body %}
 
-<div class="row g-0">
-    <div class="col-3"></div>
-    <div class="col-6">
-
-        <h1>สร้างโพสต์คำถาม</h1>
-
-        <form action="{% url 'questionic:post_question' %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-            {% csrf_token %}
-            
-            <label for="Title">หัวข้อ :
-            <input class="form-control" type="text" name="Title" placeholder="หัวข้อ" required>
-            <div class="invalid-feedback">
-              กรุณาใส่หัวข้อ
-            </div>
-            <br><br>
-            <h6>รายละเอียด : </h6>
-            <textarea class="form-control" rows = "5" cols = "50" name = "Detail" placeholder="รายละเอียด" required></textarea>
-            <div class="invalid-feedback">
-              กรุณาใส่รายละเอียด
-            </div>
-            <br><br>
-
-            <label for="Category">หมวดหมู่ :
-            <select name="Category" class="form-select" required> 
-                <option value="">--กรุณาเลือกหมวดหมู่--</option>
-                <option value="คณิตศาสตร์">คณิตศาสตร์</option>
-                <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
-                <option value="ภาษาและวัฒนธรรมไทย">ภาษาและวัฒนธรรมไทย</option>
-                <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
-                <option value="สังคมศึกษา">สังคมศึกษา</option>
-                <option value="วิชาชีพ">วิชาชีพ</option>
-                <option value="พลศึกษา">พลศึกษา</option>
-                <option value="ศิลปะ">ศิลปะ</option>
-                <option value="คอมพิวเตอร์">คอมพิวเตอร์</option>
-                <option value="อื่นๆ">อื่นๆ</option>
-              </select>
-              <div class="invalid-feedback">
-                กรุณาใส่เลือกหมวดหมู่
-              </div>
-            <br><br>
-
-            <label for="Grade">ระดับชั้น :
-            <select name="Grade" class="form-select" required> 
-                <option value="">--กรุณาเลือกระดับชั้น--</option>
-                <option value="ป.1">ป.1</option>
-                <option value="ป.2">ป.2</option>
-                <option value="ป.3">ป.3</option>
-                <option value="ป.4">ป.4</option>
-                <option value="ป.5">ป.5</option>
-                <option value="ป.6">ป.6</option>
-                <option value="ม.1">ม.1</option>
-                <option value="ม.2">ม.2</option>
-                <option value="ม.3">ม.3</option>
-                <option value="ม.4">ม.4</option>
-                <option value="ม.5">ม.5</option>
-                <option value="ม.6">ม.6</option>
-              </select>
-              <div class="invalid-feedback">
-                กรุณาใส่เลือกระดับชั้น
-              </div>
-            <br><br>
-
-            <label for="Tags">แท็ก :
-            <input class="form-control" type="text" name="Tags" ><br><br>
-
-            <label for="">รูปภาพ (.png และ .jped เท่านั้น): 
-            <input class="form-control" type="file" name="images" accept="image/png, image/jpeg" multiple><br><br>
 
 
-            <input class="btn btn-secondary btn-sm" type="submit" value="สร้างโพสต์">
-        </form>
+
+<div class="container" style="margin-top:50px;">
+  <div class="row gx-xl-5">
+      <div class="col-xl mb-lg-5 pr-cl-4">
+        <div class="card mb-5">
+          <div class="card-body" style="padding:20px 30px 10px 20px;">
+          
+            <h1>สร้างโพสต์คำถาม</h1>
+
+            <form action="{% url 'questionic:post_question' %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <label for="Title">หัวข้อ :
+                <input class="form-control" type="text" name="Title" placeholder="หัวข้อ" required>
+                <div class="invalid-feedback">
+                  กรุณาใส่หัวข้อ
+                </div>
+                <br><br>
+                <h6>รายละเอียด : </h6>
+                <div class="form-group">
+                  <textarea id="editor" name="Detail"></textarea>
+                </div>
+                <div class="invalid-feedback">
+                  กรุณาใส่รายละเอียด
+                </div>
+                <br><br>
+
+                <label for="Category">หมวดหมู่ :
+                <select name="Category" class="form-select" required> 
+                    <option value="">--กรุณาเลือกหมวดหมู่--</option>
+                    <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                    <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
+                    <option value="ภาษาและวัฒนธรรมไทย">ภาษาและวัฒนธรรมไทย</option>
+                    <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                    <option value="สังคมศึกษา">สังคมศึกษา</option>
+                    <option value="วิชาชีพ">วิชาชีพ</option>
+                    <option value="พลศึกษา">พลศึกษา</option>
+                    <option value="ศิลปะ">ศิลปะ</option>
+                    <option value="คอมพิวเตอร์">คอมพิวเตอร์</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    กรุณาใส่เลือกหมวดหมู่
+                  </div>
+                <br><br>
+
+                <label for="Grade">ระดับชั้น :
+                <select name="Grade" class="form-select" required> 
+                    <option value="">--กรุณาเลือกระดับชั้น--</option>
+                    <option value="ป.1">ป.1</option>
+                    <option value="ป.2">ป.2</option>
+                    <option value="ป.3">ป.3</option>
+                    <option value="ป.4">ป.4</option>
+                    <option value="ป.5">ป.5</option>
+                    <option value="ป.6">ป.6</option>
+                    <option value="ม.1">ม.1</option>
+                    <option value="ม.2">ม.2</option>
+                    <option value="ม.3">ม.3</option>
+                    <option value="ม.4">ม.4</option>
+                    <option value="ม.5">ม.5</option>
+                    <option value="ม.6">ม.6</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    กรุณาใส่เลือกระดับชั้น
+                  </div>
+                <br><br>
+
+                <label for="Tags">แท็ก :
+                <input class="form-control" type="text" name="Tags" ><br><br>
+
+                <label for="">รูปภาพ (.png และ .jped เท่านั้น): 
+                <input class="form-control" type="file" name="images" accept="image/png, image/jpeg" multiple><br><br>
+
+
+                <input class="btn btn-secondary btn-sm" type="submit" value="สร้างโพสต์">
+            </form>
+        </div>
+      </div>
     </div>
-    <div class="col-3"></div>
+  </div>
 </div>
+
 
 <script>
   (() => {

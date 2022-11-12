@@ -27,7 +27,7 @@ class Account(models.Model):
 class Question(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, related_name="tags")
     title = models.CharField(max_length=128)
-    detail = models.CharField(max_length=1024)
+    detail = models.CharField(max_length=9999)
     category = models.CharField(max_length=64)
     grade = models.CharField(max_length=64)
     date_asked = models.DateTimeField('Date Asked', auto_now_add=True)

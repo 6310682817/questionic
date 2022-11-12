@@ -2,28 +2,33 @@
 {% block body %}
 
 
-<div class="container">
-    <div class="row g-0">
-        <div class="col-3"></div>
-        <div class="col-6"><br><h1>Notifications</h1>
+
+<div class="container" style="margin-top:50px;">
+    <h1>Notifications</h1>
+    <div class="row gx-xl-5">
+        <div class="col-xl-8 mb-lg-5 pr-cl-4">
             {% for answer in notifications %}
-                    <p>
-                        <a href="{% url "questionic:question" answer.from_question.id%}"> จากคำถาม {{answer.from_question.title}}</a>  
-                        <br>
-                        รายละเอียด : {{answer.detail}}
-                        <br>
-                        เวลาโพสต์ : {{answer.date_answered}}
-                        <br>
-                        {% comment %} <a href="{% url "questionic:profile" question.asker.user.username%}">ผู้ถาม : {{question.asker.user.username}}</a> {% endcomment %}
-                        ผู้ตอบ : {{answer.answerer.user.username}}
-                        <br>
-                        _____________________________
-                    </p>
+                <div class="card mb-5">
+                    <div class="card-body" style="padding:20px 30px 10px 20px;">
+
+                        <p>{{answer.answerer.user.username}} ตอบกลับโพสต์</p>
+                        <a href="{% url "questionic:question" answer.from_question.id%}">{{answer.from_question.title|truncatechars:50}}</a>  
+                        <p>รายละเอียด : {{answer.detail|safe|truncatechars:50}}</p>
+                        {% if answer.date_answered.day <= time_now.day %}
+                        <p>เวลาโพสต์ : {{answer.date_answered|timesince }}</p>
+                        {% else %}
+                        <p>เวลาโพสต์ : <p>{{answer.date_answered|date:'M d, Y H:i'}}</p>
+                        {% endif %}
+                        
+
+                    </div>
+                </div>
             {% endfor %}
         </div>
-        <div class="col-3"></div>
     </div>
 </div>
+ 
+
 
 
 {% endblock %}
