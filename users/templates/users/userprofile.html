@@ -1,13 +1,23 @@
 {% include 'questionic/layout.html' %}
 {% block body %}
 
-<h1>{{ username }}</h1>
+<div class="container">
+    <div class="row g-0">
+      <div class="col-3"></div>
+      <div class="col-6">
+        <br>
+        <h1>{{ username }}</h1>
 
-<p>following : {{ following }}</p>
-<p>follower : {{ follower }}</p>
-<p>((page details in process...))</p>
+        <p>following : {{ following }}</p>
+        <p>follower : {{ follower }}</p>
+        <p>((page details in process...))</p>
 
-<a href="{% url 'users:follow' userf=username %}"><button class="button">Follow</button></a>
+        <a href="{% url 'users:follow' userf=username %}"><button class="button">Follow</button></a>
+      </div>
+      <div class="col-3"></div>
+    </div>
+  </div>
+
 
 
  

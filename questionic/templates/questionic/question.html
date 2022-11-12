@@ -44,10 +44,12 @@
         <h4>ความคิดเห็น<h4>
         <br>
         {%for answer, image_answer in dict_answer_image.items %}
-            <div style='display: flex;'>
-                <img src="{{answer.answerer.image_profile.url}}" width="50" height="50">
-                <h6>&nbsp&nbsp{{answer.answerer}} &nbsp&nbsp&nbsp {{answer.date_answered}}<h6>
-            </div>
+            <a style="color: #000;" href="{% url 'users:userprofile' answer.answerer %}">
+                <div style='display: flex;'>
+                    <img src="{{answer.answerer.image_profile.url}}" width="50" height="50">
+                    <h6>&nbsp&nbsp{{answer.answerer}} &nbsp&nbsp&nbsp {{answer.date_answered}}<h6>
+                </div>
+            </a>
 
             <div style="margin-left: 55px;">
                 <h5> {{answer.detail}}<h5>
@@ -58,7 +60,7 @@
             </div>
             
             <br><br>
-            <button name="show_reply_button" onclick="show_reply('{{answer.id}}')">ตอบกลับ</button>
+            <button class="form-control" name="show_reply_button" onclick="show_reply('{{answer.id}}')">ตอบกลับ</button>
             <div style="margin-left: 75px;" hidden id='show_reply{{answer.id}}'>
                 <div style='display: flex;'>
                     <img src="{{myaccount.image_profile.url}}" width="50" height="50">
@@ -82,10 +84,12 @@
                     {%for reply, image_reply in reply_answer_image.items %}
 
                     <div style="margin-left: 75px;">
-                        <div style='display: flex;'>
-                            <img src="{{reply.reply_answerer.image_profile.url}}" width="50" height="50">
-                            <h6>&nbsp&nbsp {{reply.reply_answerer}} &nbsp&nbsp&nbsp {{reply.date_reply_answered}}<h6>
-                        </div>
+                        <a style="color: #000;" href="{% url 'users:userprofile' reply.reply_answerer %}">
+                            <div style='display: flex;'>
+                                <img src="{{reply.reply_answerer.image_profile.url}}" width="50" height="50">
+                                <h6>&nbsp&nbsp {{reply.reply_answerer}} &nbsp&nbsp&nbsp {{reply.date_reply_answered}}<h6>
+                            </div>
+                        </a>
                         
                         <div style="margin-left: 55px;">
                             <h5>{{reply.detail}}<h5>

@@ -8,8 +8,7 @@
         <div class="col-6"><br><h1>Notifications</h1>
             {% for answer in notifications %}
                     <p>
-                        คำตอบ
-                        {% comment %} <a href="{% url "questionic:question" question.id%}">หัวข้อ : {{question.title}}</a> {% endcomment %}
+                        <a href="{% url "questionic:question" answer.from_question.id%}"> จากคำถาม {{answer.from_question.title}}</a>  
                         <br>
                         รายละเอียด : {{answer.detail}}
                         <br>

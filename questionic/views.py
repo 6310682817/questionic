@@ -4,6 +4,8 @@ from django.urls import reverse
 from .models import Question, Account, QuestionFile, Answer, AnswerFile
 from .models import ReplyAnswer, ReplyAnswerFile, Notification
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -17,7 +19,8 @@ def index(request):
 
     notification_alert = notification.alert_reply_notification()
     return render(request, 'questionic/index.html', {
-        "notification_alert": notification_alert
+        "notification_alert": notification_alert,
+        "account": account
     })
 
 def about(request):
@@ -29,7 +32,8 @@ def about(request):
 
     notification_alert = notification.alert_reply_notification()
     return render(request, 'questionic/about.html', {
-        "notification_alert": notification_alert
+        "notification_alert": notification_alert,
+        "account": account
     })
 
 def post_question(request):
@@ -58,12 +62,14 @@ def post_question(request):
         
     notification_alert = notification.alert_reply_notification()  
     return render(request, 'questionic/post_question.html', {
-        "notification_alert": notification_alert
+        "notification_alert": notification_alert,
+        "account": account
     })
 
 def question(request, question_id):
     user = User.objects.get(username=request.user.username)
     myaccount = Account.objects.get(user=user)
+    account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=myaccount)
 
     if request.method == 'POST':
@@ -115,10 +121,14 @@ def question(request, question_id):
         'myaccount': myaccount,
         'dict_answer_image': dict_answer_image,
         'dict_reply_image': dict_reply_image,
-        'notification_alert': notification_alert
+        'notification_alert': notification_alert,
+        "account": account
     })
 
 def notification(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('users:login'))
+
     user = User.objects.get(username=request.user.username)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=account)
@@ -129,5 +139,38 @@ def notification(request):
     notifications = notification.reply_notification.all().order_by('-date_answered')
     return render(request, 'questionic/notification.html', {
         "notification_alert": notification_alert,
-        "notifications": notifications
+        "notifications": notifications,
+        "account": account
     })
+
+def search(request):
+    if not request.user.is_authenticated:
+        return render(request, 'questionic/search.html', {
+        })
+
+    
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+    notification_alert = notification.alert_reply_notification()
+
+    search_keyword = ""
+    if request.method == "GET":
+        search_keyword = request.GET['search_keyword']
+        question_search = Question.objects.filter(Q(title__contains=search_keyword) | Q(detail__contains=search_keyword))
+    return render(request, 'questionic/search.html', {
+        "notification_alert": notification_alert,
+        "search_keyword": search_keyword,
+        "question_search": question_search,
+        "account": account
+    })
+
+def notification_alert(request):
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+    notification_alert = notification.alert_reply_notification()
+    return JsonResponse({
+        'notification_alert':notification_alert,
+    })
+

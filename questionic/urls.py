@@ -11,6 +11,8 @@ urlpatterns = [
     path('post_question/', views.post_question, name='post_question'),
     path('question/<int:question_id>', views.question, name='question'),
     path('notification/', views.notification, name='notification'),
+    path('notification_alert/', views.notification_alert, name='notification_alert'),
+    path('search/', views.search, name='search'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

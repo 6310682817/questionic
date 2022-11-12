@@ -15,7 +15,8 @@ def index(request):
 
     notification_alert = notification.alert_reply_notification()
     return render(request, 'users/index.html', {
-        'notification_alert': notification_alert
+        'notification_alert': notification_alert,
+        'account': account
     })
 
 def login_view(request):
@@ -34,9 +35,10 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return render(request, 'users/login.html', {
-        'message': 'you are logged out.'
-    })
+    return HttpResponseRedirect(reverse('questionic:index'))
+    # return render(request, 'users/login.html', {
+    #     'message': 'you are logged out.'
+    # })
 
 def signup(request):
     if request.method == "POST":
@@ -84,6 +86,8 @@ def signup(request):
     return render(request, 'users/signup.html')
 
 def userprofile(request, username):
+    user = User.objects.get(username=request.user.username)
+    myaccount = Account.objects.get(user=user)
     account = User.objects.filter(username=username).count()
     if account == 0 :
             return HttpResponse('User Not Found.', status = 400)
@@ -95,7 +99,8 @@ def userprofile(request, username):
     return render(request, 'users/userprofile.html', {
         "username" : username,
         "following" : following,
-        "follower" : follower
+        "follower" : follower,
+        "account": myaccount
     })
 
 
