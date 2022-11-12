@@ -25,21 +25,27 @@
         <h4>แสดงความคิดเห็น<h4>
         <br><br><br><br>
         
-        <div style='display: flex;'>
-            <img src="{{myaccount.image_profile.url}}" width="50" height="50">
-            <h6>&nbsp {{myaccount}}</h6> 
-        </div>
-        <div style="margin-left: 55px;">
-            <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                {% csrf_token %}
-                <textarea class="form-control" rows = "5" cols = "50" name = "Detail" placeholder="เขียนความคิดเห็น" required></textarea>
-                <div class="invalid-feedback">
-                    กรุณาเขียนความคิดเห็น
-                </div>
-                <input class="form-control" type="file" name="images" accept="image/png, image/jpeg" multiple>
-                <button class="btn btn-secondary btn-sm" type="submit" name="comment" value="{{question.id}}">ส่งความคิดเห็น</button>
-            </form>
-        </div>
+        {% if user.is_authenticated %}
+            <div style='display: flex;'>
+                <img src="{{myaccount.image_profile.url}}" width="50" height="50">
+                <h6>&nbsp {{myaccount}}</h6> 
+            </div>
+            <div style="margin-left: 55px;">
+                
+                <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <textarea class="form-control" rows = "5" cols = "50" name = "Detail" placeholder="เขียนความคิดเห็น" required></textarea>
+                    <div class="invalid-feedback">
+                        กรุณาเขียนความคิดเห็น
+                    </div>
+                    <input class="form-control" type="file" name="images" accept="image/png, image/jpeg" multiple>
+                    <button class="btn btn-secondary btn-sm" type="submit" name="comment" value="{{question.id}}">ส่งความคิดเห็น</button>
+                </form>
+            </div>
+        {% else %}
+            <p>กรุณาเข้าสู่ระบบเพื่อเขียนความคิดเห็น</p>
+        {% endif %}
+        
         <br><br><br>
         <h4>ความคิดเห็น<h4>
         <br>
@@ -60,7 +66,12 @@
             </div>
             
             <br><br>
+            {% if user.is_authenticated %}
             <button class="form-control" name="show_reply_button" onclick="show_reply('{{answer.id}}')">ตอบกลับ</button>
+            {% else %}
+            <p>กรุณาเข้าสู่ระบบเพื่อเขียนความคิดเห็น</p>
+            {% endif %}
+            
             <div style="margin-left: 75px;" hidden id='show_reply{{answer.id}}'>
                 <div style='display: flex;'>
                     <img src="{{myaccount.image_profile.url}}" width="50" height="50">
