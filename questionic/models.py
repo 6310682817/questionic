@@ -17,7 +17,7 @@ class Account(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     image_profile = models.ImageField(upload_to = user_directory_path, blank=True)
     fav_tag = models.ManyToManyField(Tag, blank=True, related_name="fav_tag")
-    fav_question = models.ManyToManyField(Tag, blank=True, related_name="fav_question")
+    fav_question = models.ManyToManyField('Question', blank=True, related_name="fav_question")
     following = models.ManyToManyField('Account', blank=True, related_name="follower")
     report = models.ManyToManyField('Account', blank=True, related_name="reporter")
 
