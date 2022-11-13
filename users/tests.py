@@ -113,7 +113,7 @@ class UsersTestCaseIteration2(TestCase):
         response = c.get(reverse('users:follow', args=("user2",)))
         self.assertEqual(response.status_code, 302)
 
-    def test_login_follow_user_status_code(self):
+    def test_login_follow_user_count(self):
         """ account follower count should be 1 """
 
         c = Client()
