@@ -103,8 +103,6 @@ def question(request, question_id):
     notification_alert = notification.alert_reply_notification()
 
     if request.method == 'POST':
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('users:login'))
 
         detail = request.POST['Detail']
         images = request.FILES.getlist('images')
