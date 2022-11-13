@@ -77,11 +77,10 @@ class QuestionicTestCaseIteration2(TestCase):
         response = c.get(reverse('questionic:question', args=(question.id,)))
         self.assertEqual(response.status_code, 200)
 
-    def test_answer_question_status_code(self):
-        """ post_question status code is redirect """
+    def test_answer_question_count(self):
+        """ answer question follower count should be 1 """
         account1 = Account.objects.first()
         question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
-
 
         c = Client()
         image = NamedTemporaryFile()
@@ -91,10 +90,11 @@ class QuestionicTestCaseIteration2(TestCase):
             "comment": question.id,
             "images": image
         })
-        self.assertEqual(response.status_code, 200)
+        answer = Answer.objects.all()
+        self.assertEqual(answer.count(), 1)
 
-    def test_reply_question_status_code(self):
-        """ post_question status code is redirect """
+    def test_reply_answer_question_count(self):
+        """ reply answer question follower count should be 1 """
         account1 = Account.objects.first()
         question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
 
@@ -109,7 +109,8 @@ class QuestionicTestCaseIteration2(TestCase):
             "reply": answer.id,
             "images": image
         })
-        self.assertEqual(response.status_code, 200)
+        reply = ReplyAnswer.objects.all()
+        self.assertEqual(reply.count(), 1)
 
     def test_not_login_notification_status_code(self):
         """ notification status code is redirect """
