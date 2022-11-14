@@ -5,30 +5,88 @@
 
 <div class="container" style="margin-top:50px;">
     <h1>Notifications</h1>
-    <div class="row gx-xl-5">
-        <div class="col-xl-8 mb-lg-5 pr-cl-4">
-            {% for answer in notifications %}
-                <div class="card mb-5">
-                    <div class="card-body" style="padding:20px 30px 10px 20px;">
 
-                        <p>{{answer.answerer.user.username}} ตอบกลับโพสต์</p>
-                        <a href="{% url "questionic:question" answer.from_question.id%}">{{answer.from_question.title|truncatechars:50}}</a>  
-                        <p>รายละเอียด : {{answer.detail|safe|truncatechars:50}}</p>
-                        {% if answer.date_answered.day <= time_now.day %}
-                        <p>เวลาโพสต์ : {{answer.date_answered|timesince }}</p>
-                        {% else %}
-                        <p>เวลาโพสต์ : <p>{{answer.date_answered|date:'M d, Y H:i'}}</p>
-                        {% endif %}
-                        
-
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+    <div class="tab">
+        <button class="tablinks" onclick="openNoti(event, 'reply')">Reply</button>
+        {% if user.is_staff %}
+        <button class="tablinks" onclick="openNoti(event, 'qreport')">Post report</button>
+        {% endif %}
     </div>
+
+    <div id="reply" class="tabcontent">
+
+        <div class="row gx-xl-5">
+            <div class="col-xl-8 mb-lg-5 pr-cl-4">
+                {% for answer in reply_notifications %}
+
+                    <div class="card mb-5">
+                        <div class="card-body" style="padding:20px 30px 10px 20px;">
+
+                            <p>{{answer.answerer.user.username}} ตอบกลับโพสต์</p>
+                            <a href="{% url "questionic:question" answer.from_question.id%}">{{answer.from_question.title|truncatechars:50}}</a> 
+                            <p>รายละเอียด : {{answer.detail|safe|truncatechars:50}}</p>
+                            {% if answer.date_answered.day <= time_now.day %}
+                            <p>เวลาโพสต์ : {{answer.date_answered|timesince }}</p>
+                            {% else %}
+                            <p>เวลาโพสต์ : <p>{{answer.date_answered|date:'M d, Y H:i'}}</p>
+                            {% endif %} 
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <br>
+                    <p>No notification yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    {% if user.is_staff %}
+    
+    <div id="qreport" class="tabcontent">
+
+        <div class="row gx-xl-5">
+            <div class="col-xl-8 mb-lg-5 pr-cl-4">
+                {% for question in qreport_notifications %}
+
+                    <div class="card mb-5">
+                        <div class="card-body" style="padding:20px 30px 10px 20px;">
+                            
+                            <a href="{% url "questionic:question" question.id%}">โพสต์: {{question.title|truncatechars:50}}</a>  
+                            <p>ของ {{question.asker.user.username}} ถูกรายงานโดยผู้ใช้งาน {{question.reporter.count}} คน</p>
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <br>
+                    <p>No notification yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
 </div>
  
-
+<script>
+    function openNoti(evt, type) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(type).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+</script>
 
 
 {% endblock %}

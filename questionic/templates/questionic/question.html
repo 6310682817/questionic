@@ -16,6 +16,9 @@
                     {%endfor%}
                     <br><br><br>
                     
+                    <a href="{% url 'questionic:report' question.id %}"><button class="btn btn-secondary btn-sm">report this post</button></a>
+                    <br><br>
+
                     <div style='display: flex;'>
                         <img src="{{question.asker.image_profile.url}}" width="50" height="50">
                         <h6>&nbsp {{question.asker}} <br>&nbsp {{question.date_asked}}</h6> 

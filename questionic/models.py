@@ -85,10 +85,15 @@ class Notification(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='notifications')
     follow_notification = models.ManyToManyField(Question, blank=True, related_name='noti_follow')
     reply_notification = models.ManyToManyField(Answer, blank=True, related_name='noti_reply')
+    qreport_notification = models.ManyToManyField(Question, blank=True, related_name='noti_qreport')
+
     follow_notification_count = models.PositiveIntegerField(default=0)
     reply_notification_count = models.PositiveIntegerField(default=0)
+    qreport_notification_count = models.PositiveIntegerField(default=0)
 
     def alert_reply_notification(self):
-        if self.reply_notification.count() > self.reply_notification_count:
-            return self.reply_notification.count() - self.reply_notification_count
+        dotcount = self.reply_notification.count() + self.qreport_notification.count()
+        count = self.reply_notification_count + self.qreport_notification_count
+        if dotcount > count:
+            return dotcount - count
         return 0

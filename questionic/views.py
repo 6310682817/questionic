@@ -162,12 +162,16 @@ def notification(request):
     notification = Notification.objects.get(account=account)
 
     notification.reply_notification_count = notification.reply_notification.count()
+    notification.qreport_notification_count = notification.qreport_notification.count()
     notification.save()
+    
     notification_alert = notification.alert_reply_notification()
-    notifications = notification.reply_notification.all().order_by('-date_answered')
+    reply_notifications = notification.reply_notification.all().order_by('-date_answered')
+    qreport_notifications =  notification.qreport_notification.all().order_by('-date_asked')
     return render(request, 'questionic/notification.html', {
         "notification_alert": notification_alert,
-        "notifications": notifications,
+        "reply_notifications": reply_notifications,
+        "qreport_notifications": qreport_notifications,
         "account": account,
         "time_now": datetime.now()
     })
@@ -207,3 +211,13 @@ def notification_alert(request):
             'notification_alert':0,
     })
 
+def report(request, question_id):
+    question = Question.objects.get(id=question_id)
+    question.reporter.add(request.user.id)
+
+    staff = User.objects.filter(is_staff=True)
+    for person in staff:
+        account = Account.objects.get(user=person)
+        Notification.objects.get(account=account).qreport_notification.add(question)
+    
+    return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))
