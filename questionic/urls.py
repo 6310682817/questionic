@@ -13,7 +13,7 @@ urlpatterns = [
     path('notification/', views.notification, name='notification'),
     path('notification_alert/', views.notification_alert, name='notification_alert'),
     path('search/', views.search, name='search'),
-    path('report/<int:question_id>', views.report, name='report'),
+    path('report/<str:type_report>/<int:report_id>', views.report, name='report'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

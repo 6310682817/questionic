@@ -10,6 +10,8 @@
         <button class="tablinks" onclick="openNoti(event, 'reply')">Reply</button>
         {% if user.is_staff %}
         <button class="tablinks" onclick="openNoti(event, 'qreport')">Post report</button>
+        <button class="tablinks" onclick="openNoti(event, 'areport')">Answer report</button>
+        <button class="tablinks" onclick="openNoti(event, 'rreport')">Reply report</button>
         {% endif %}
     </div>
 
@@ -42,6 +44,7 @@
 
     </div>
 
+
     {% if user.is_staff %}
     
     <div id="qreport" class="tabcontent">
@@ -55,6 +58,58 @@
                             
                             <a href="{% url "questionic:question" question.id%}">โพสต์: {{question.title|truncatechars:50}}</a>  
                             <p>ของ {{question.asker.user.username}} ถูกรายงานโดยผู้ใช้งาน {{question.reporter.count}} คน</p>
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <br>
+                    <p>No notification yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+
+    <div id="areport" class="tabcontent">
+
+        <div class="row gx-xl-5">
+            <div class="col-xl-8 mb-lg-5 pr-cl-4">
+                {% for answer in areport_notifications %}
+
+                    <div class="card mb-5">
+                        <div class="card-body" style="padding:20px 30px 10px 20px;">
+                            
+                            <p>ความคิดเห็น: {{answer.detail|safe|truncatechars:50}}</p>
+                            <a href="{% url "questionic:question" answer.from_question.id%}">จากโพสต์ {{answer.from_question.title|truncatechars:50}}</a> 
+                            <p>ของ {{answer.answerer.user.username}} ถูกรายงานโดยผู้ใช้งาน {{answer.reporter.count}} คน</p>
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <br>
+                    <p>No notification yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div id="rreport" class="tabcontent">
+
+        <div class="row gx-xl-5">
+            <div class="col-xl-8 mb-lg-5 pr-cl-4">
+                {% for reply in rreport_notifications %}
+
+                    <div class="card mb-5">
+                        <div class="card-body" style="padding:20px 30px 10px 20px;">
+                            
+                            <p>การตอบกลับ: {{reply.detail|safe|truncatechars:50}}</p>
+                            <p>ของความคิดเห็น: {{reply.from_answer.detail|safe|truncatechars:50}}</p>
+                            <a href="{% url "questionic:question" reply.from_answer.from_question.id%}">จากโพสต์ {{reply.from_answer.from_question.title|truncatechars:50}}</a> 
+                            <p>ของ {{reply.reply_answerer.user.username}} ถูกรายงานโดยผู้ใช้งาน {{reply.reporter.count}} คน</p>
 
                         </div>
                     </div>

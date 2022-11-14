@@ -33,8 +33,8 @@ class ReplyAnswerFileAdmin(admin.ModelAdmin):
     list_display = ("image", "reply_answer")
 
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ("account", "follow_notification_count", "reply_notification_count", "qreport_notification_count")
-    filter_horizontal = ("follow_notification", "reply_notification", "qreport_notification")
+    list_display = ("account", "follow_notification_count", "reply_notification_count")
+    filter_horizontal = ("follow_notification", "reply_notification", "qreport_notification", "areport_notification", "rreport_notification")
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Account, AccountAdmin)

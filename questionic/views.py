@@ -162,19 +162,36 @@ def notification(request):
     notification = Notification.objects.get(account=account)
 
     notification.reply_notification_count = notification.reply_notification.count()
-    notification.qreport_notification_count = notification.qreport_notification.count()
     notification.save()
     
     notification_alert = notification.alert_reply_notification()
     reply_notifications = notification.reply_notification.all().order_by('-date_answered')
-    qreport_notifications =  notification.qreport_notification.all().order_by('-date_asked')
-    return render(request, 'questionic/notification.html', {
-        "notification_alert": notification_alert,
-        "reply_notifications": reply_notifications,
-        "qreport_notifications": qreport_notifications,
-        "account": account,
-        "time_now": datetime.now()
-    })
+    
+    if request.user.is_staff:
+        notification.qreport_notification_count = notification.qreport_notification.count()
+        notification.areport_notification_count = notification.areport_notification.count()
+        notification.rreport_notification_count = notification.rreport_notification.count()
+        notification.save()
+
+        qreport_notifications =  notification.qreport_notification.all().order_by('-date_asked')
+        areport_notifications =  notification.areport_notification.all().order_by('-date_answered')
+        rreport_notifications =  notification.rreport_notification.all().order_by('-date_reply_answered')
+        return render(request, 'questionic/notification.html', {
+            "notification_alert": notification_alert,
+            "reply_notifications": reply_notifications,
+            "qreport_notifications": qreport_notifications,
+            "areport_notifications": areport_notifications,
+            "rreport_notifications": rreport_notifications,
+            "account": account,
+            "time_now": datetime.now()
+        })
+    else:
+        return render(request, 'questionic/notification.html', {
+            "notification_alert": notification_alert,
+            "reply_notifications": reply_notifications,
+            "account": account,
+            "time_now": datetime.now()
+        })
 
 def search(request):
     if not request.user.is_authenticated:
@@ -211,13 +228,33 @@ def notification_alert(request):
             'notification_alert':0,
     })
 
-def report(request, question_id):
-    question = Question.objects.get(id=question_id)
-    question.reporter.add(request.user.id)
+def report(request, type_report, report_id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('users:login'))
 
     staff = User.objects.filter(is_staff=True)
-    for person in staff:
-        account = Account.objects.get(user=person)
-        Notification.objects.get(account=account).qreport_notification.add(question)
-    
-    return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))
+    if type_report == 'question':
+        question = Question.objects.get(id=report_id)
+        question.reporter.add(request.user.id)
+        for person in staff:
+            account = Account.objects.get(user=person)
+            Notification.objects.get(account=account).qreport_notification.add(question)
+
+        return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))
+
+    elif type_report == 'answer':
+        answer = Answer.objects.get(id=report_id)
+        answer.reporter.add(request.user.id)
+        for person in staff:
+            account = Account.objects.get(user=person)
+            Notification.objects.get(account=account).areport_notification.add(answer)
+        return HttpResponseRedirect(reverse('questionic:question', args=(answer.from_question.id, )))
+
+    elif type_report == 'reply':
+        reply = ReplyAnswer.objects.get(id=report_id)
+        reply.reporter.add(request.user.id)
+        for person in staff:
+            account = Account.objects.get(user=person)
+            Notification.objects.get(account=account).rreport_notification.add(reply)
+        
+        return HttpResponseRedirect(reverse('questionic:question', args=(reply.from_answer.from_question.id, )))

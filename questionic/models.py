@@ -85,15 +85,20 @@ class Notification(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='notifications')
     follow_notification = models.ManyToManyField(Question, blank=True, related_name='noti_follow')
     reply_notification = models.ManyToManyField(Answer, blank=True, related_name='noti_reply')
+
     qreport_notification = models.ManyToManyField(Question, blank=True, related_name='noti_qreport')
+    areport_notification = models.ManyToManyField(Answer, blank=True, related_name='noti_areport')
+    rreport_notification = models.ManyToManyField(ReplyAnswer, blank=True, related_name='noti_rreport')
 
     follow_notification_count = models.PositiveIntegerField(default=0)
     reply_notification_count = models.PositiveIntegerField(default=0)
     qreport_notification_count = models.PositiveIntegerField(default=0)
+    areport_notification_count = models.PositiveIntegerField(default=0)
+    rreport_notification_count = models.PositiveIntegerField(default=0)
 
     def alert_reply_notification(self):
-        dotcount = self.reply_notification.count() + self.qreport_notification.count()
-        count = self.reply_notification_count + self.qreport_notification_count
+        dotcount = self.reply_notification.count() + self.qreport_notification.count() + self.areport_notification.count() + self.rreport_notification.count()
+        count = self.reply_notification_count + self.qreport_notification_count + self.areport_notification_count + self.rreport_notification_count
         if dotcount > count:
             return dotcount - count
         return 0
