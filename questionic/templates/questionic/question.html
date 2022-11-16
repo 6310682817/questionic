@@ -18,8 +18,9 @@
                     
                     <div style='display: flex;'>
                         <a href="{% url 'questionic:report' 'question' question.id %}"><button class="btn btn-secondary btn-sm">report this post</button></a>
-                        <p style='margin:20px 10px;font-size:18px'>{{question.faved}}</p>
+                        
                         {% if user.is_authenticated %}
+                            <p style='margin:20px 10px;font-size:18px'>{{question.faved}}</p>
                             <form action="{% url 'questionic:question' question.id %}" method="post">
                                 {% csrf_token %}
                                 {% if not question in account.fav_question.all %}
