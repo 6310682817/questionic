@@ -16,7 +16,21 @@
                     {%endfor%}
                     <br><br><br>
                     
-                    <a href="{% url 'questionic:report' 'question' question.id %}"><button class="btn btn-secondary btn-sm">report this post</button></a>
+                    <div style='display: flex;'>
+                        <a href="{% url 'questionic:report' 'question' question.id %}"><button class="btn btn-secondary btn-sm">report this post</button></a>
+                        <p style='margin:20px 10px;font-size:18px'>{{question.faved}}</p>
+                        {% if user.is_authenticated %}
+                            <form action="{% url 'questionic:question' question.id %}" method="post">
+                                {% csrf_token %}
+                                {% if not question in account.fav_question.all %}
+                                    <button style='width:20px' class="btn btn_fav btn-outline-danger" type="submit" name="fav" value="fav"><i style='margin-left:-10px;width:20px' class="far fa-heart" aria-hidden="true"></i></button>
+                                {% else %}
+                                    <button style='width:20px' class="btn btn_fav btn-outline-danger" type="submit" name="unfav" value="unfav"><i style='margin-left:-10px;width:20px' class="fas fa-heart" aria-hidden="true"></i></button>
+                                {% endif %}
+                            </form>
+                        {% endif %}
+                    </div>
+                    
                     <br><br>
 
                     <div style='display: flex;'>

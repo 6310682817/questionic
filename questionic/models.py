@@ -17,7 +17,7 @@ class Account(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     image_profile = models.ImageField(upload_to = user_directory_path, blank=True)
     fav_tag = models.ManyToManyField(Tag, blank=True, related_name="fav_tag")
-    fav_question = models.ManyToManyField('Question', blank=True, related_name="fav_question")
+    fav_question = models.ManyToManyField('Question', blank=True, related_name="fav_account")
     following = models.ManyToManyField('Account', blank=True, related_name="follower")
     report = models.ManyToManyField('Account', blank=True, related_name="reporter")
 
@@ -33,6 +33,7 @@ class Question(models.Model):
     date_asked = models.DateTimeField('Date Asked', auto_now_add=True)
     asker = models.ForeignKey(Account, on_delete=models.CASCADE)
     reporter = models.ManyToManyField(Account, blank=True, related_name="question_report")
+    faved = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"question: {self.id}"

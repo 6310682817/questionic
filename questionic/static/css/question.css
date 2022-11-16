@@ -1,0 +1,8 @@
+.btn_fav {
+    padding-left:auto;
+    padding-right:auto;
+    border: none; 
+    font-size: 20px; 
+    cursor: pointer; 
+    box-shadow: none;
+  }

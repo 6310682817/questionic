@@ -12,16 +12,30 @@ from django.utils.timezone import datetime
 
 def index(request):
     if not request.user.is_authenticated:
-        return render(request, 'questionic/index.html')
+        question_lastest = Question.objects.all().order_by("-date_asked")[:10]
+        question_popular = Question.objects.all().order_by('-faved')[:10]
+
+        print(question_popular)
+        return render(request, 'questionic/index.html', {
+            "question_lastest": question_lastest,
+            "question_popular": question_popular,
+            "time_now": datetime.now(),
+        })
 
     user = User.objects.get(username=request.user.username)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=account)
-
     notification_alert = notification.alert_reply_notification()
+
+    question_lastest = Question.objects.all().order_by("-date_asked")[:10]
+    question_popular = Question.objects.all().order_by('-faved')[:10]
+
     return render(request, 'questionic/index.html', {
         "notification_alert": notification_alert,
-        "account": account
+        "account": account,
+        "question_lastest": question_lastest,
+        "question_popular": question_popular,
+        "time_now": datetime.now(),
     })
 
 def about(request):
@@ -104,9 +118,9 @@ def question(request, question_id):
 
     if request.method == 'POST':
 
-        detail = request.POST['Detail']
-        images = request.FILES.getlist('images')
         if  request.POST.get('comment'):
+            detail = request.POST['Detail']
+            images = request.FILES.getlist('images')
             from_question = Question.objects.get(id=request.POST['comment'])
             answerer = Account.objects.get(user=user)
             answer=Answer.objects.create(detail = detail, from_question=from_question, answerer=answerer)
@@ -116,12 +130,28 @@ def question(request, question_id):
             if not from_question.asker == answerer:
                 Notification.objects.get(account=from_question.asker).reply_notification.add(answer)
                 
-        else:
+        elif request.POST.get('reply'):
+            detail = request.POST['Detail']
+            images = request.FILES.getlist('images')
             from_answer = Answer.objects.get(id=request.POST['reply'])
             reply_answerer = Account.objects.get(user=user)
             reply_answer = ReplyAnswer.objects.create(detail = detail, from_answer=from_answer, reply_answerer=reply_answerer)
             for image in images:
                 ReplyAnswerFile.objects.create(reply_answer=reply_answer, image=image)
+
+        elif request.POST.get('fav'):
+            question = Question.objects.get(id=question_id)
+            account.fav_question.add(question)
+            account.save()
+            question.faved = question.fav_account.count()
+            question.save()
+
+        elif request.POST.get('unfav'):
+            question = Question.objects.get(id=question_id)
+            account.fav_question.remove(question)
+            account.save()
+            question.faved = question.fav_account.count()
+            question.save()
     
      # Question
     question = Question.objects.get(id=question_id)
