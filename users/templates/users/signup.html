@@ -13,9 +13,6 @@
     <div id="box2">
         <form action="{% url 'users:signup' %}" method="post">
             {% csrf_token %}
-            {{ formu }}
-            
-            <!-- <input type="image"> -->
 
             <p2>Username*</p2>
             {% if usermessage %}

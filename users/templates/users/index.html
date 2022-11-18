@@ -1,9 +1,64 @@
 {% include 'questionic/layout.html' %}
 {% block body %}
 
-<h1>Hello {{ request.user.username }}</h1>
-<p>((page details in process...))</p>
+<div class="container">
+    <div class="row g-0">
+      <div class="col-3"></div>
+      <div class="col-6">
+        <br>
+        <h1>Hello {{ request.user.username }}</h1>
+        <br>
+        <table style="width: 100%; text-align: center;">
+            <tr>
+                {% if post_history.count == '' %}
+                <td>0</td>
+                {% else %}
+                <td>{{ post_history.count }}</td>
+                {% endif %} 
+                <td>{{ following }}</td>
+                <td>{{ follower }}</td>
+            </tr>
+            <tr>
+                <th>post</th>
+                <th>following</th>
+                <th>follower</th>
+            </tr>
+        </table>
 
-<a href="{% url 'users:logout' %}"><button class="button">Logout</button></a>
+        <!-- <a href="{% url 'users:logout' %}"><button class="button">Logout</button></a> -->
+
+        <br><br>
+
+        <h3>ประวัติการโพสต์</h3>
+
+        {% for question in post_history %}
+
+            <div class="card mb-5">
+                <div class="card-body" style="padding:20px 30px 10px 20px;">
+
+                    <a href="{% url "questionic:question" question.id%}">โพสต์: {{question.title|truncatechars:50}}</a>  
+                    <p>รายละเอียด : {{question.detail|safe|truncatechars:50}}</p>
+                    <p>หมวดหมู่ : {{question.category}} {{question.grade}}</p>
+                    {% if question.date_asked.day <= time_now.day %}
+                    <p>เวลาโพสต์ : {{question.date_asked|timesince }}</p>
+                    {% else %}
+                    <p>เวลาโพสต์ : {{question.date_asked|date:'M d, Y H:i'}}</p>
+                    {% endif %} 
+
+                </div>
+            </div>
+        {% empty %}
+            <div class="card mb-5">
+                <div class="card-body" style="padding:20px 30px 10px 20px; text-align: center;">
+                    <p>ยังไม่มีโพสต์</p>
+                    <a href="{% url "questionic:post_question" %}">โพสต์เลย!</a>
+                </div>
+            </div>
+        {% endfor %}
+
+      </div>
+      <div class="col-3"></div>
+    </div>
+  </div>
  
 {% endblock %}

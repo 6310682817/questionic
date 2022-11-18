@@ -6,13 +6,63 @@
       <div class="col-3"></div>
       <div class="col-6">
         <br>
-        <h1>{{ username }}</h1>
+        <table style="width: 100%;">
+          <tr>
+            <td><h1>{{ username }}</h1></td>
+            <td>
+              <a href="{% url 'users:follow' status=follow_status userf=username %}"><button class="button">{{ follow_status }}</button></a>
+            </td>
+          </tr>
+        </table>
+        
+        <br>
 
-        <p>following : {{ following }}</p>
-        <p>follower : {{ follower }}</p>
-        <p>((page details in process...))</p>
+        <table style="width: 100%; text-align: center;">
+            <tr>
+                {% if post_history.count == '' %}
+                <td>0</td>
+                {% else %}
+                <td>{{ post_history.count }}</td>
+                {% endif %} 
+                <td>{{ following }}</td>
+                <td>{{ follower }}</td>
+            </tr>
+            <tr>
+                <th>post</th>
+                <th>following</th>
+                <th>follower</th>
+            </tr>
+        </table>
 
-        <a href="{% url 'users:follow' userf=username %}"><button class="button">Follow</button></a>
+        
+
+        <br><br>
+
+        <h3>โพสต์ของ{{ username }}</h3>
+
+        {% for question in post_history %}
+
+            <div class="card mb-5">
+                <div class="card-body" style="padding:20px 30px 10px 20px;">
+
+                    <a href="{% url "questionic:question" question.id%}">โพสต์: {{question.title|truncatechars:50}}</a>  
+                    <p>หมวดหมู่ : {{question.category}} {{question.grade}}</p>
+                    {% if question.date_asked.day <= time_now.day %}
+                    <p>โพสต์เมื่อ : {{question.date_asked|timesince }}</p>
+                    {% else %}
+                    <p>โพสต์เมื่อ : {{question.date_asked|date:'M d, Y H:i'}}</p>
+                    {% endif %} 
+
+                </div>
+            </div>
+        {% empty %}
+        <div class="card mb-5">
+          <div class="card-body" style="padding:20px 30px 10px 20px; text-align: center;">
+              <p>ยังไม่มีการโพสต์</p>
+          </div>
+      </div>
+        {% endfor %}
+
       </div>
       <div class="col-3"></div>
     </div>
