@@ -124,6 +124,8 @@ def question(request, question_id):
             from_question = Question.objects.get(id=request.POST['comment'])
             answerer = Account.objects.get(user=user)
             answer=Answer.objects.create(detail = detail, from_question=from_question, answerer=answerer)
+            from_question.answer_count = from_question.answer.count()
+            from_question.save()
             for image in images:
                 AnswerFile.objects.create(answer=answer, image=image)
             
@@ -235,12 +237,34 @@ def search(request):
     notification_alert = notification.alert_reply_notification()
 
     search_keyword = ""
+    category = ""
+    grade = ""
+    status = ""
     if request.method == "GET":
-        search_keyword = request.GET['search_keyword']
-        question_search = Question.objects.filter(Q(title__contains=search_keyword) | Q(detail__contains=search_keyword))
+        print(request.GET)
+        question_search = Question.objects.all()
+        if request.GET.get('search_keyword'):
+            search_keyword = request.GET['search_keyword']
+            question_search = question_search.filter(Q(title__contains=search_keyword) | Q(detail__contains=search_keyword))
+        if request.GET.get('category'):
+            category = request.GET['category']
+            question_search = question_search.filter(category=category)
+        if request.GET.get('grade'):
+            grade = request.GET['grade']
+            question_search = question_search.filter(grade=grade)
+        if request.GET.get('status'):
+            status = request.GET['status']
+            if status == 'unanswer':
+                question_search = question_search.filter(answer_count=0)
+            elif status == 'answer':
+                question_search = question_search.exclude(answer_count=0)
+
     return render(request, 'questionic/search.html', {
         "notification_alert": notification_alert,
         "search_keyword": search_keyword,
+        "category": category,
+        "grade": grade,
+        "status": status,
         "question_search": question_search,
         "account": account
     })

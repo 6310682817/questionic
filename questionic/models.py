@@ -34,6 +34,7 @@ class Question(models.Model):
     asker = models.ForeignKey(Account, on_delete=models.CASCADE)
     reporter = models.ManyToManyField(Account, blank=True, related_name="question_report")
     faved = models.PositiveIntegerField(default=0)
+    answer_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"question: {self.id}"
@@ -48,7 +49,7 @@ class QuestionFile(models.Model):
 class Answer(models.Model):
     detail = models.CharField(max_length=1024)
     date_answered = models.DateTimeField('Date Answered', auto_now_add=True)
-    from_question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    from_question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answer")
     answerer = models.ForeignKey(Account, on_delete=models.CASCADE)
     reporter = models.ManyToManyField(Account, blank=True, related_name="answer_report")
 
