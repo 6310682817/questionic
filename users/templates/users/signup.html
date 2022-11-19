@@ -18,7 +18,7 @@
             {% if usermessage %}
                 <div style="color: red">{{ usermessage }}</div>
             {% endif %}
-            <input type="text" name="username" placeholder="Username">
+            <input type="text" name="username" placeholder="Username" value="{{ username }}">
             
             <br><br>
 
@@ -26,19 +26,19 @@
             {% if passwordmessage %}
                 <div style="color: red">{{ passwordmessage }}</div>
             {% endif %}
-            <input type="password" name="password" placeholder="Password">
-            <input type="password" name="password confirmation" placeholder="Password confirmation">
+            <input type="password" name="password" placeholder="Password" value="{{ password }}">
+            <input type="password" name="password confirmation" placeholder="Password confirmation" value="{{ cpassword }}">
             
             <br><br>
 
             <p2>Email</p2>
-            <input type="email" name="email" placeholder="email">
+            <input type="email" name="email" placeholder="email" value="{{ email }}">
             
             <br><br>
 
             <p2>Name</p2>
-            <input type="text" name="firstname" placeholder="First name">
-            <input type="text" name="lastname" placeholder="Last name">
+            <input type="text" name="firstname" placeholder="First name" value="{{ first_name }}">
+            <input type="text" name="lastname" placeholder="Last name" value="{{ last_name }}">
             <input type="submit" value="sign up">
         </form>
     </div>

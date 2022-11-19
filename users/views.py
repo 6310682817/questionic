@@ -57,6 +57,13 @@ def signup(request):
         pmessage = ''
 
         username = request.POST["username"]
+        password = request.POST["password"]
+        cpassword = request.POST["password confirmation"]
+        email = request.POST["email"]
+        first_name = request.POST["firstname"]
+        last_name = request.POST["lastname"]
+
+        # check username
         if username == '' :
             umessage = 'please enter username.'
         else :
@@ -64,36 +71,37 @@ def signup(request):
             if account != 0 :
                 umessage = 'this username is already taken.'
         
-
-        password = request.POST["password"]
+        # check password
         if password == '' :
             pmessage = 'please enter password.'
-        
-        cpassword = request.POST["password confirmation"]
         if password != cpassword :
             pmessage = 'confirm password is not same as password.'
         
-        if umessage != '' or pmessage != '':
+        if umessage == '' and pmessage == '':
+            user = User.objects.create_user(username, email, password)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+            
+            account = Account.objects.create(user=user)
+            account.image_profile = '../static/assets/default_profile/profile-pic ('+ str(int(account.id) % 16)+').png'
+            account.save()
+
+            Notification.objects.create(account=account)
+
+            return render(request, 'users/login.html')
+
+        else:
             return render(request, 'users/signup.html', {
                 'usermessage': umessage,
-                'passwordmessage': pmessage
+                'passwordmessage': pmessage,
+                'username' : username,
+                'password' : password,
+                'cpassword' : cpassword,
+                'email' : email,
+                'first_name' : first_name,
+                'last_name' : last_name,
             })
-
-        email = request.POST["email"]
-
-        user = User.objects.create_user(username, email, password)
-        user.first_name = request.POST["firstname"]
-        user.last_name = request.POST["lastname"]
-        user.save()
-        
-        account = Account.objects.create(user=user)
-        account.image_profile = '../static/assets/default_profile/profile-pic ('+ str(int(account.id) % 16)+').png'
-        account.save()
-
-        Notification.objects.create(account=account)
-
-        return render(request, 'users/login.html')
-
     return render(request, 'users/signup.html')
 
 def userprofile(request, username):
