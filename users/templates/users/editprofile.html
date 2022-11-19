@@ -1,0 +1,96 @@
+{% include 'questionic/layout.html' %}
+{% block body %}
+
+<div class="container" style="margin-top:50px;">
+    <div class="tab">
+        <button class="tablinks" onclick="openNoti(event, 'profile')">แก้ไขโปรไฟล์</button>
+        <button class="tablinks" onclick="openNoti(event, 'password')">แก้ไขPassword</button>
+    </div>
+    <div id="profile" class="tabcontent">
+        <div class="row gx-xl-5">
+            <div class="col-xl-8 mb-lg-5 pr-cl-4">
+                <h1>แก้ไขโปรไฟล์</h1>
+
+                <form action="{% url 'users:editprofile' %}" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+
+                    <br>
+                    <label for="firstname">Firstname :
+                    <input class="form-control" type="text" name="firstname" value="{{user.first_name}}" placeholder="First name">
+
+                    <br><br>
+                    <label for="lastname">Lasttname :
+                    <input class="form-control" type="text" name="lastname" value="{{user.last_name}}" placeholder="Last name">
+
+                    <br><br>
+                    <label for="email">Email :
+                    <input class="form-control" type="email" name="email" value="{{user.email}}" placeholder="email">
+                    
+                    <br><br>
+
+                    <label for="">รูปภาพ (.png และ .jped เท่านั้น): 
+                    <input class="form-control" type="file" name="image" accept="image/png, image/jpeg">
+                    <br>
+                    <img src='{{account.image_profile.url}}' class="img-thumbnail" width="200" height="300">
+                    <br><br>
+
+                    <input class="btn btn-secondary btn-sm" type="submit" value="Save Profile">
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="password" class="tabcontent">
+        <div class="row gx-xl-5">
+            <div class="col-xl-8 mb-lg-5 pr-cl-4">
+                <h1>แก้ไขPassword</h1>
+
+                <form action="{% url 'users:editprofile' %}" enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+
+                    {% if passwordmessage %}
+                        <div style="color: red">{{ passwordmessage }}</div>
+                    {% endif %}
+                    <br>
+                    <label for="password">รหัสผ่าน :
+                    <input class="form-control" type="password" name="password" placeholder="รหัสผ่าน">
+
+                    <br><br>
+                    <label for="password confirmation">ยืนยันรหัสผ่าน :
+                    <input class="form-control" type="password" name="password confirmation" placeholder="ยืนยันรหัสผ่าน"> 
+                    
+                    <br><br>
+
+                    <input class="btn btn-secondary btn-sm" type="submit" value="Save Password">
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function openNoti(evt, type) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(type).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+    window.addEventListener("load", (event) => {
+        openNoti(event, '{{type}}');
+      });
+</script>
+
+{% endblock %}
+
+
