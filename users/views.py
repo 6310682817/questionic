@@ -153,3 +153,52 @@ def follow(request, status, userf):
     elif status == 'Unfollow':
         username.following.remove(userfollow)
     return HttpResponseRedirect(reverse('users:userprofile', args=(userf,)))
+
+def editprofile(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('users:login'))
+
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    notification = Notification.objects.get(account=account)
+
+    notification_alert = notification.alert_reply_notification()
+    if request.method == "POST":
+        if request.POST.get("password"):
+            pmessage = ''
+
+            password = request.POST["password"]
+            if password == '' :
+                pmessage = 'please enter password.'
+            
+            cpassword = request.POST["password confirmation"]
+            if password != cpassword :
+                pmessage = 'confirm password is not same as password.'
+            
+            if pmessage != '':
+                return render(request, 'users/editprofile.html', {
+                    'passwordmessage': pmessage,
+                    'type': 'password'
+                })
+            user.set_password(password)
+            user.save()
+            print(password)
+            print(user.password)
+
+        elif request.POST.get("firstname"):
+            image = request.FILES.getlist("image")
+
+            user.first_name = request.POST["firstname"]
+            user.last_name = request.POST["lastname"]
+            user.email = request.POST["email"]
+            user.save()
+            for img in image:
+                account.image_profile = img
+            account.save()
+
+        return HttpResponseRedirect(reverse('users:index'))   
+    return render(request, 'users/editprofile.html', {
+        "notification_alert": notification_alert,
+        "account": account,
+        'type': 'profile'
+    })
