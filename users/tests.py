@@ -106,7 +106,7 @@ class UsersTestCaseIteration2(TestCase):
         response = c.get(reverse('users:userprofile', args=("user1",)))
         self.assertEqual(response.status_code, 400)
 
-    def test_not_login_follow_user_status_code(self):
+    def test_not_login_follow_user_count(self):
         """ follow view's status code is 302 """
 
         c = Client()
@@ -122,3 +122,38 @@ class UsersTestCaseIteration2(TestCase):
         response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
         response = c.get(reverse('users:follow', args=("Follow", "user2",)))
         self.assertEqual(account2.follower.count(), 1)
+
+class UsersTestCaseIteration3(TestCase):
+    def setUp(self):
+        user1 = User.objects.create_superuser(username='admin', password='1234')
+        account1 = Account.objects.create(user=user1, image_profile='./static/assets/default_profile/profile-pic (0).png')
+
+        user2 = User.objects.create(username='user2', password='1234')
+        account2 = Account.objects.create(user=user2, image_profile='./static/assets/default_profile/profile-pic (0).png')
+
+        Notification.objects.create(account=account1)
+        Notification.objects.create(account=account2)
+
+    def test_follow_unfollow_button_status_code(self):
+        """ userprofile view's status code is 200 """
+
+        c = Client()
+        account2 = Account.objects.last()
+        c.get(reverse('users:userprofile', args=("user2",)))
+
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        c.get(reverse('users:userprofile', args=("user2",)))
+
+        c.get(reverse('users:follow', args=("Follow", "user2",)))
+        response = c.get(reverse('users:userprofile', args=("user2",)))
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_unfollow_user_count(self):
+        """ account follower count should be 0 """
+
+        c = Client()
+        account2 = Account.objects.last()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        c.get(reverse('users:follow', args=("Follow", "user2",)))
+        c.get(reverse('users:follow', args=("Unfollow", "user2",)))
+        self.assertEqual(account2.follower.count(), 0)

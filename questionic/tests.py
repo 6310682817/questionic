@@ -126,3 +126,94 @@ class QuestionicTestCaseIteration2(TestCase):
         response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
         response = c.get(reverse('questionic:notification'))
         self.assertEqual(response.status_code, 200)
+
+class QuestionicTestCaseIteration3(TestCase):
+    def setUp(self):
+        user1 = User.objects.create_superuser(username='admin', password='1234')
+        account1 = Account.objects.create(user=user1, image_profile='./static/assets/default_profile/profile-pic (0).png')
+
+        user2 = User.objects.create_superuser(username='user2', password='1234')
+        account2 = Account.objects.create(user=user2, image_profile='./static/assets/default_profile/profile-pic (0).png')
+
+        Notification.objects.create(account=account1)
+        Notification.objects.create(account=account2)
+
+    def test_not_login_report_count(self):
+        """ report count should be 0 """
+
+        c = Client()
+        account1 = Account.objects.first()
+
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        question = Question.objects.first()
+        response = c.get(reverse('questionic:report', args=("question", question.id,)))
+
+        notification_account1 = Notification.objects.get(account=account1)
+        self.assertEqual(notification_account1.qreport_notification.count(), 0)
+
+    def test_question_report_admin_notification_count(self):
+        """ question report count should be 1 """
+
+        c = Client()
+        account1 = Account.objects.first()
+
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        question = Question.objects.first()
+        response = c.post(reverse('users:login'), {"username" : "user2", "password": "1234"})
+        response = c.get(reverse('questionic:report', args=("question", question.id,)))
+
+        notification_account1 = Notification.objects.get(account=account1)
+        self.assertEqual(notification_account1.qreport_notification.count(), 1)
+
+    def test_answer_report_admin_notification_count(self):
+        """ answer report count should be 1 """
+
+        c = Client()
+        account1 = Account.objects.first()
+
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        answer = Answer.objects.create(detail="detail", from_question=question, answerer=account1)
+        answer = Answer.objects.first()
+        response = c.post(reverse('users:login'), {"username" : "user2", "password": "1234"})
+        response = c.get(reverse('questionic:report', args=("answer", answer.id,)))
+
+        notification_account1 = Notification.objects.get(account=account1)
+        self.assertEqual(notification_account1.areport_notification.count(), 1)
+
+    def test_reply_answer_report_admin_notification_count(self):
+        """ reply answer report count should be 1 """
+
+        c = Client()
+        account1 = Account.objects.first()
+
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        answer = Answer.objects.create(detail="detail", from_question=question, answerer=account1)
+        reply_answer = ReplyAnswer.objects.create(detail="detail", from_answer=answer, reply_answerer=account1)
+        reply_answer = ReplyAnswer.objects.first()
+
+        response = c.post(reverse('users:login'), {"username" : "user2", "password": "1234"})
+        response = c.get(reverse('questionic:report', args=("reply", reply_answer.id,)))
+
+        notification_account1 = Notification.objects.get(account=account1)
+        self.assertEqual(notification_account1.rreport_notification.count(), 1)
+
+    def test_following_new_post_notification_count(self):
+        """ follow notification count should be 1 """
+
+        c = Client()
+        account1 = Account.objects.first()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        c.get(reverse('users:follow', args=("Follow", "user2",)))
+
+        c.post(reverse('users:login'), {"username" : "user2", "password": "1234"})
+        image = NamedTemporaryFile()
+        c.post(reverse('questionic:post_question'), {
+            "Title": "title",
+            "Detail": "detail",
+            "Category": "category",
+            "Grade": "grade",
+            "images": image
+        })
+        
+        notification_account1 = Notification.objects.get(account=account1)
+        self.assertEqual(notification_account1.follow_notification.count(), 1)
