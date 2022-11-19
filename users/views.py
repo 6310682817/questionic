@@ -20,7 +20,7 @@ def index(request):
     else:
         post_history = Question.objects.filter(asker=account).all().order_by("-date_asked")
 
-    notification_alert = notification.alert_reply_notification()
+    notification_alert = notification.alert_notification()
     return render(request, 'users/index.html', {
         'notification_alert': notification_alert,
         'account': account,

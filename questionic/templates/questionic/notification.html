@@ -7,11 +7,27 @@
     <h1>Notifications</h1>
 
     <div class="tab">
-        <button class="tablinks" onclick="openNoti(event, 'reply')">Reply</button>
+        <button class="tablinks" onclick="openNoti(event, 'reply')">Reply
+            {% if new_noti.reply != 0 %}
+            <span id="badge_alert" class="badge rounded-pill badge-notification bg-danger" style="margin-left: 1px;">{{ new_noti.reply }}</span>
+            {% endif %}
+        </button>
         {% if user.is_staff %}
-        <button class="tablinks" onclick="openNoti(event, 'qreport')">Post report</button>
-        <button class="tablinks" onclick="openNoti(event, 'areport')">Answer report</button>
-        <button class="tablinks" onclick="openNoti(event, 'rreport')">Reply report</button>
+        <button class="tablinks" onclick="openNoti(event, 'qreport')">Post report
+            {% if new_noti.qreport != 0 %}
+            <span id="badge_alert" class="badge rounded-pill badge-notification bg-danger" style="margin-left: 1px;">{{ new_noti.qreport }}</span>
+            {% endif %}
+        </button>
+        <button class="tablinks" onclick="openNoti(event, 'areport')">Answer report
+            {% if new_noti.areport != 0 %}
+            <span id="badge_alert" class="badge rounded-pill badge-notification bg-danger" style="margin-left: 1px;">{{ new_noti.areport }}</span>
+            {% endif %}
+        </button>
+        <button class="tablinks" onclick="openNoti(event, 'rreport')">Reply report
+            {% if new_noti.rreport != 0 %}
+            <span id="badge_alert" class="badge rounded-pill badge-notification bg-danger" style="margin-left: 1px;">{{ new_noti.rreport }}</span>
+            {% endif %}
+        </button>
         {% endif %}
     </div>
 

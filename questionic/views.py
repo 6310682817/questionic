@@ -25,7 +25,7 @@ def index(request):
     user = User.objects.get(username=request.user.username)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=account)
-    notification_alert = notification.alert_reply_notification()
+    notification_alert = notification.alert_notification()
 
     question_lastest = Question.objects.all().order_by("-date_asked")[:10]
     question_popular = Question.objects.all().order_by('-faved')[:10]
@@ -45,7 +45,7 @@ def about(request):
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=account)
 
-    notification_alert = notification.alert_reply_notification()
+    notification_alert = notification.alert_notification()
     return render(request, 'questionic/about.html', {
         "notification_alert": notification_alert,
         "account": account
@@ -75,7 +75,7 @@ def post_question(request):
             QuestionFile.objects.create(question=question, image=img)
         return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))  
         
-    notification_alert = notification.alert_reply_notification()  
+    notification_alert = notification.alert_notification()  
     return render(request, 'questionic/post_question.html', {
         "notification_alert": notification_alert,
         "account": account
@@ -114,7 +114,7 @@ def question(request, question_id):
     myaccount = Account.objects.get(user=user)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=myaccount)
-    notification_alert = notification.alert_reply_notification()
+    notification_alert = notification.alert_notification()
 
     if request.method == 'POST':
 
@@ -192,11 +192,15 @@ def notification(request):
     user = User.objects.get(username=request.user.username)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=account)
+    new_noti = {'reply': notification.alert_reply_notification(), 
+            'qreport': notification.alert_qreport_notification(), 
+            'areport': notification.alert_areport_notification(), 
+            'rreport': notification.alert_rreport_notification()}
 
     notification.reply_notification_count = notification.reply_notification.count()
     notification.save()
     
-    notification_alert = notification.alert_reply_notification()
+    notification_alert = notification.alert_notification()
     reply_notifications = notification.reply_notification.all().order_by('-date_answered')
     
     if request.user.is_staff:
@@ -210,6 +214,7 @@ def notification(request):
         rreport_notifications =  notification.rreport_notification.all().order_by('-date_reply_answered')
         return render(request, 'questionic/notification.html', {
             "notification_alert": notification_alert,
+            "new_noti": new_noti,
             "reply_notifications": reply_notifications,
             "qreport_notifications": qreport_notifications,
             "areport_notifications": areport_notifications,
@@ -220,6 +225,7 @@ def notification(request):
     else:
         return render(request, 'questionic/notification.html', {
             "notification_alert": notification_alert,
+            "new_noti": new_noti,
             "reply_notifications": reply_notifications,
             "account": account,
             "time_now": datetime.now()
@@ -234,7 +240,7 @@ def search(request):
     user = User.objects.get(username=request.user.username)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=account)
-    notification_alert = notification.alert_reply_notification()
+    notification_alert = notification.alert_notification()
 
     search_keyword = ""
     category = ""
@@ -274,7 +280,7 @@ def notification_alert(request):
         user = User.objects.get(username=request.user.username)
         account = Account.objects.get(user=user)
         notification = Notification.objects.get(account=account)
-        notification_alert = notification.alert_reply_notification()
+        notification_alert = notification.alert_notification()
         return JsonResponse({
             'notification_alert':notification_alert,
         })

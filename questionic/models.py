@@ -99,8 +99,29 @@ class Notification(models.Model):
     rreport_notification_count = models.PositiveIntegerField(default=0)
 
     def alert_reply_notification(self):
-        dotcount = self.reply_notification.count() + self.qreport_notification.count() + self.areport_notification.count() + self.rreport_notification.count()
-        count = self.reply_notification_count + self.qreport_notification_count + self.areport_notification_count + self.rreport_notification_count
-        if dotcount > count:
-            return dotcount - count
+        dotcount = self.reply_notification.count()
+        count = self.reply_notification_count
+        return dotcount - count
+
+    def alert_qreport_notification(self):
+        dotcount = self.qreport_notification.count()
+        count = self.qreport_notification_count
+        return dotcount - count
+
+    def alert_areport_notification(self):
+        dotcount = self.areport_notification.count()
+        count = self.areport_notification_count
+        return dotcount - count
+
+    def alert_rreport_notification(self):
+        dotcount = self.rreport_notification.count()
+        count = self.rreport_notification_count
+        return dotcount - count
+
+    def alert_notification(self):
+
+        count_noti = self.alert_reply_notification() + self.alert_qreport_notification() + self.alert_areport_notification() + self.alert_rreport_notification()
+        if count_noti != 0:
+            return count_noti
         return 0
+
