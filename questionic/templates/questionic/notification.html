@@ -12,6 +12,12 @@
             <span id="badge_alert" class="badge rounded-pill badge-notification bg-danger" style="margin-left: 1px;">{{ new_noti.reply }}</span>
             {% endif %}
         </button>
+        <button class="tablinks" onclick="openNoti(event, 'follow')">Following
+            {% if new_noti.follow != 0 %}
+            <span id="badge_alert" class="badge rounded-pill badge-notification bg-danger" style="margin-left: 1px;">{{ new_noti.follow }}</span>
+            {% endif %}
+        </button>
+
         {% if user.is_staff %}
         <button class="tablinks" onclick="openNoti(event, 'qreport')">Post report
             {% if new_noti.qreport != 0 %}
@@ -31,7 +37,8 @@
         {% endif %}
     </div>
 
-    <div id="reply" class="tabcontent">
+<!-- reply -->
+    <div id="reply" class="tabcontent" style="height: 250px; width:100%; overflow:scroll;">
 
         <div class="row gx-xl-5">
             <div class="col-xl-8 mb-lg-5 pr-cl-4">
@@ -60,10 +67,39 @@
 
     </div>
 
+<!-- follow -->
+<div id="follow" class="tabcontent" style="height: 250px; width:100%; overflow:scroll;">
 
+    <div class="row gx-xl-5">
+        <div class="col-xl-8 mb-lg-5 pr-cl-4">
+            {% for question in follow_notifications %}
+
+                <div class="card mb-5">
+                    <div class="card-body" style="padding:20px 30px 10px 20px;">
+
+                        <p>{{question.asker.user.username}} ที่คุณติดตามมีโพสต์ใหม่!</p>
+                        <a href="{% url "questionic:question" question.id%}">โพสต์: {{question.title|truncatechars:50}}</a>  
+                        {% if question.date_asked.day <= time_now.day %}
+                        <p>เวลาโพสต์ : {{question.date_asked|timesince }}</p>
+                        {% else %}
+                        <p>เวลาโพสต์ : <p>{{question.date_asked|date:'M d, Y H:i'}}</p>
+                        {% endif %} 
+
+                    </div>
+                </div>
+            {% empty %}
+                <br>
+                <p>No notification yet</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- report -->
     {% if user.is_staff %}
     
-    <div id="qreport" class="tabcontent">
+    <div id="qreport" class="tabcontent" style="height: 250px; width:100%; overflow:scroll;">
 
         <div class="row gx-xl-5">
             <div class="col-xl-8 mb-lg-5 pr-cl-4">
@@ -87,7 +123,7 @@
     </div>
 
 
-    <div id="areport" class="tabcontent">
+    <div id="areport" class="tabcontent" style="height: 250px; width:100%; overflow:scroll;">
 
         <div class="row gx-xl-5">
             <div class="col-xl-8 mb-lg-5 pr-cl-4">
@@ -113,7 +149,7 @@
 
 
 
-    <div id="rreport" class="tabcontent">
+    <div id="rreport" class="tabcontent" style="height: 250px; width:100%; overflow:scroll;">
 
         <div class="row gx-xl-5">
             <div class="col-xl-8 mb-lg-5 pr-cl-4">
