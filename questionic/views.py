@@ -140,20 +140,6 @@ def question(request, question_id):
             reply_answer = ReplyAnswer.objects.create(detail = detail, from_answer=from_answer, reply_answerer=reply_answerer)
             for image in images:
                 ReplyAnswerFile.objects.create(reply_answer=reply_answer, image=image)
-
-        elif request.POST.get('fav'):
-            question = Question.objects.get(id=question_id)
-            account.fav_question.add(question)
-            account.save()
-            question.faved = question.fav_account.count()
-            question.save()
-
-        elif request.POST.get('unfav'):
-            question = Question.objects.get(id=question_id)
-            account.fav_question.remove(question)
-            account.save()
-            question.faved = question.fav_account.count()
-            question.save()
     
      # Question
     question = Question.objects.get(id=question_id)
@@ -184,6 +170,26 @@ def question(request, question_id):
         'notification_alert': notification_alert,
         "account": account
     })
+
+def fav_question(request, question_id, status):
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    if status == 'fav':
+            question = Question.objects.get(id=question_id)
+            account.fav_question.add(question)
+            account.save()
+            question.faved = question.fav_account.count()
+            question.save()
+
+    elif status == 'unfav':
+        question = Question.objects.get(id=question_id)
+        account.fav_question.remove(question)
+        account.save()
+        question.faved = question.fav_account.count()
+        question.save()
+    
+    return HttpResponseRedirect(reverse('questionic:question', args=(question_id, )))
+    
 
 def notification(request):
     if not request.user.is_authenticated:
@@ -318,3 +324,30 @@ def report(request, type_report, report_id):
             Notification.objects.get(account=account).rreport_notification.add(reply)
         
         return HttpResponseRedirect(reverse('questionic:question', args=(reply.from_answer.from_question.id, )))
+
+def delete_question(request, question_id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('users:login'))
+
+
+    user = User.objects.get(username=request.user.username)
+    account = Account.objects.get(user=user)
+    question = Question.objects.get(id=question_id)
+    
+    if not user.is_staff and not question.asker.user == user:
+        return HttpResponseRedirect(reverse('questionic:question', args=(question_id, )))
+
+    for answer in Answer.objects.filter(from_question=question):
+        for reply_answer in ReplyAnswer.objects.filter(from_answer=answer):
+
+            for image in ReplyAnswerFile.objects.filter(reply_answer=reply_answer):
+                image.delete()
+            reply_answer.delete()
+        for image in AnswerFile.objects.filter(answer=answer):
+            image.delete()
+        answer.delete()
+
+    question.delete()
+
+    return HttpResponseRedirect(reverse('questionic:index'))
+

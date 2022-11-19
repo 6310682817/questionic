@@ -13,6 +13,8 @@ urlpatterns = [
     path('notification_alert/', views.notification_alert, name='notification_alert'),
     path('search/', views.search, name='search'),
     path('report/<str:type_report>/<int:report_id>', views.report, name='report'),
+    path('delete_question/<int:question_id>', views.delete_question, name='delete_question'),
+    path('fav_question/<int:question_id>/<str:status>', views.fav_question, name='fav_question'),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ] 
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

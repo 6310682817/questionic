@@ -16,42 +16,60 @@
                     {%endfor%}
                     <br><br><br>
                     
-                    <div style='display: flex;'>
-                        <a href="{% url 'questionic:report' 'question' question.id %}"><button class="btn btn-secondary btn-sm">report this post</button></a>
-                        
-                        {% if user.is_authenticated %}
-                            <p style='margin:20px 10px;font-size:18px'>{{question.faved}}</p>
-                            <form action="{% url 'questionic:question' question.id %}" method="post">
-                                {% csrf_token %}
-                                {% if not question in account.fav_question.all %}
-                                    <button style='width:20px' class="btn btn_fav btn-outline-danger" type="submit" name="fav" value="fav"><i style='margin-left:-10px;width:20px' class="far fa-heart" aria-hidden="true"></i></button>
-                                {% else %}
-                                    <button style='width:20px' class="btn btn_fav btn-outline-danger" type="submit" name="unfav" value="unfav"><i style='margin-left:-10px;width:20px' class="fas fa-heart" aria-hidden="true"></i></button>
-                                {% endif %}
-                            </form>
-                        {% endif %}
-                    </div>
+                    
                     
                     <br><br>
-
-                    <div style='display: flex;'>
-                        <img src="{{question.asker.image_profile.url}}" width="50" height="50">
-                        <h6>&nbsp {{question.asker}} <br>&nbsp {{question.date_asked}}</h6> 
+                    <a style="color: #000;" href="{% url 'users:userprofile' question.asker %}">
+                        <div style='display: flex;'>
+                            <img src="{{question.asker.image_profile.url}}" width="50" height="50">
+                            <h6>&nbsp {{question.asker}} <br>&nbsp {{question.date_asked|date:'M d, Y H:i'}}</h6> 
+                        </div>
+                    </a>
+                    <hr>
+                    <div style='display: flex; font-size:18px;'>
+                        {% if user.is_authenticated %}
+                            <ul class="navbar-nav flex-row">
+                            {% if not question in account.fav_question.all %}
+                                <a style="margin-top:8px" href="{% url 'questionic:fav_question' question.id 'fav' %}"><p style="color:red;">ถูกใจ</p></a>
+                            {% else %}
+                                <a style="margin-top:8px" href="{% url 'questionic:fav_question' question.id 'unfav' %}"><p style="color:red;">เลิกถูกใจ</p></a>
+                            {% endif %}
+                            &nbsp&nbsp
+                            <li class="nav-item dropdown me-3 me-lg-1">
+                                <a class="nav-link dropdown-toggle hidden-arrow" href="{% url 'questionic:notification' %}" id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+                                  เมนู
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                                  <li>
+                                    <a class="dropdown-item" href="{% url 'questionic:report' 'question' question.id %}"><i class="far fa-flag"></i>&nbsp report this post</a>
+                                  </li>
+                                  {% if user.is_staff or user == question.asker.user%}
+                                  <li>
+                                    <a class="dropdown-item" href="{% url 'questionic:delete_question' question.id %}"><i class="far fa-trash-alt"></i>&nbsp delete this post</a>
+                                  </li>
+                                  {% endif %}
+                                </ul>
+                              </li>
+                            </ul>
+            
+                        {% endif %}
                     </div>
                 </div>
             
             </div>
  
    
-                    <h4>แสดงความคิดเห็น<h4>
+            <h4>แสดงความคิดเห็น<h4>
         
             <div class="card mb-5">
                 <div class="card-body">
                     {% if user.is_authenticated %}
-                        <div style='display: flex;'>
-                            <img src="{{myaccount.image_profile.url}}" width="50" height="50">
-                            <h6>&nbsp {{myaccount}}</h6> 
-                        </div>
+                        <a style="color: #000;" href="{% url 'users:userprofile' account %}">
+                            <div style='display: flex;'>
+                                <img src="{{account.image_profile.url}}" width="50" height="50">
+                                <h6>&nbsp {{account}}</h6> 
+                            </div>
+                        </a>
                         <div style="margin-left: 55px;">
                             
                             <form action="{% url 'questionic:question' question.id %}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
@@ -72,7 +90,6 @@
                 </div>
             
             </div>
-
                     <h4>ความคิดเห็น<h4>
                     <br>
                     {%for answer, image_answer in dict_answer_image.items %}
@@ -81,7 +98,7 @@
                         <a style="color: #000;" href="{% url 'users:userprofile' answer.answerer %}">
                             <div style='display: flex;'>
                                 <img src="{{answer.answerer.image_profile.url}}" width="50" height="50">
-                                <h6>&nbsp&nbsp{{answer.answerer}} &nbsp&nbsp&nbsp {{answer.date_answered}}<h6>
+                                <h6>&nbsp&nbsp{{answer.answerer}} &nbsp&nbsp&nbsp {{answer.date_answered|date:'M d, Y H:i'}}<h6>
                             </div>
                         </a>
             
@@ -102,6 +119,7 @@
                         {% endif %}
                         
                         <div style="margin-left: 75px;" hidden id='show_reply{{answer.id}}'>
+                            <br>
                             <div style='display: flex;'>
                                 <img src="{{myaccount.image_profile.url}}" width="50" height="50">
                                 <h6>&nbsp {{myaccount}}</h6> 
@@ -129,7 +147,7 @@
                                     <a style="color: #000;" href="{% url 'users:userprofile' reply.reply_answerer %}">
                                         <div style='display: flex;'>
                                             <img src="{{reply.reply_answerer.image_profile.url}}" width="50" height="50">
-                                            <h6>&nbsp&nbsp {{reply.reply_answerer}} &nbsp&nbsp&nbsp {{reply.date_reply_answered}}<h6>
+                                            <h6>&nbsp&nbsp {{reply.reply_answerer}} &nbsp&nbsp&nbsp {{reply.date_reply_answered|date:'M d, Y H:i'}}<h6>
                                         </div>
                                     </a>
                                     
