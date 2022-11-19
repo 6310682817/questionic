@@ -110,8 +110,9 @@ class UsersTestCaseIteration2(TestCase):
         """ follow view's status code is 302 """
 
         c = Client()
-        response = c.get(reverse('users:follow', args=("user2",)))
-        self.assertEqual(response.status_code, 302)
+        response = c.get(reverse('users:follow', args=("Follow", "user2",)))
+        account2 = Account.objects.last()
+        self.assertEqual(account2.follower.count(), 0)
 
     def test_login_follow_user_count(self):
         """ account follower count should be 1 """
@@ -119,5 +120,5 @@ class UsersTestCaseIteration2(TestCase):
         c = Client()
         account2 = Account.objects.last()
         response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
-        response = c.get(reverse('users:follow', args=("user2",)))
+        response = c.get(reverse('users:follow', args=("Follow", "user2",)))
         self.assertEqual(account2.follower.count(), 1)
