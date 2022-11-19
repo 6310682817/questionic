@@ -73,7 +73,13 @@ def post_question(request):
 
         for img in images:
             QuestionFile.objects.create(question=question, image=img)
-        return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))  
+
+        follower = Account.objects.filter(following=user.id)
+        for person in follower:
+            Notification.objects.get(account=person).follow_notification.add(question)
+
+        return HttpResponseRedirect(reverse('questionic:question', args=(question.id, ))) 
+         
         
     notification_alert = notification.alert_notification()  
     return render(request, 'questionic/post_question.html', {
@@ -198,16 +204,21 @@ def notification(request):
     user = User.objects.get(username=request.user.username)
     account = Account.objects.get(user=user)
     notification = Notification.objects.get(account=account)
-    new_noti = {'reply': notification.alert_reply_notification(), 
-            'qreport': notification.alert_qreport_notification(), 
-            'areport': notification.alert_areport_notification(), 
-            'rreport': notification.alert_rreport_notification()}
+    new_noti = {
+        'reply': notification.alert_reply_notification(), 
+        'follow': notification.alert_follow_notification(),
+        'qreport': notification.alert_qreport_notification(), 
+        'areport': notification.alert_areport_notification(), 
+        'rreport': notification.alert_rreport_notification()
+        }
 
     notification.reply_notification_count = notification.reply_notification.count()
+    notification.follow_notification_count = notification.follow_notification.count()
     notification.save()
     
     notification_alert = notification.alert_notification()
     reply_notifications = notification.reply_notification.all().order_by('-date_answered')
+    follow_notifications = notification.follow_notification.all().order_by('-date_asked')
     
     if request.user.is_staff:
         notification.qreport_notification_count = notification.qreport_notification.count()
@@ -222,6 +233,7 @@ def notification(request):
             "notification_alert": notification_alert,
             "new_noti": new_noti,
             "reply_notifications": reply_notifications,
+            "follow_notifications": follow_notifications,
             "qreport_notifications": qreport_notifications,
             "areport_notifications": areport_notifications,
             "rreport_notifications": rreport_notifications,
@@ -233,6 +245,7 @@ def notification(request):
             "notification_alert": notification_alert,
             "new_noti": new_noti,
             "reply_notifications": reply_notifications,
+            "follow_notifications": follow_notifications,
             "account": account,
             "time_now": datetime.now()
         })

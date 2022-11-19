@@ -36,32 +36,34 @@
 
         
 
-        <br><br>
+        <br>
 
         <h3>โพสต์ของ{{ username }}</h3>
 
-        {% for question in post_history %}
+        <div style="height: 300px; width:100%; overflow:scroll; border:1px solid #ccc;">
+          {% for question in post_history %}
 
-            <div class="card mb-5">
-                <div class="card-body" style="padding:20px 30px 10px 20px;">
+              <div class="card mb-5">
+                  <div class="card-body" style="padding:20px 30px 10px 20px;">
 
-                    <a href="{% url "questionic:question" question.id%}">โพสต์: {{question.title|truncatechars:50}}</a>  
-                    <p>หมวดหมู่ : {{question.category}} {{question.grade}}</p>
-                    {% if question.date_asked.day <= time_now.day %}
-                    <p>โพสต์เมื่อ : {{question.date_asked|timesince }}</p>
-                    {% else %}
-                    <p>โพสต์เมื่อ : {{question.date_asked|date:'M d, Y H:i'}}</p>
-                    {% endif %} 
+                      <a href="{% url "questionic:question" question.id%}">โพสต์: {{question.title|truncatechars:50}}</a>  
+                      <p>หมวดหมู่ : {{question.category}} {{question.grade}}</p>
+                      {% if question.date_asked.day <= time_now.day %}
+                      <p>โพสต์เมื่อ : {{question.date_asked|timesince }}</p>
+                      {% else %}
+                      <p>โพสต์เมื่อ : {{question.date_asked|date:'M d, Y H:i'}}</p>
+                      {% endif %} 
 
-                </div>
+                  </div>
+              </div>
+          {% empty %}
+          <div class="card mb-5">
+            <div class="card-body" style="padding:20px 30px 10px 20px; text-align: center;">
+                <p>ยังไม่มีการโพสต์</p>
             </div>
-        {% empty %}
-        <div class="card mb-5">
-          <div class="card-body" style="padding:20px 30px 10px 20px; text-align: center;">
-              <p>ยังไม่มีการโพสต์</p>
           </div>
-      </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
 
       </div>
       <div class="col-3"></div>

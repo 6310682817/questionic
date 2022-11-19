@@ -19,7 +19,6 @@ class Account(models.Model):
     fav_tag = models.ManyToManyField(Tag, blank=True, related_name="fav_tag")
     fav_question = models.ManyToManyField('Question', blank=True, related_name="fav_account")
     following = models.ManyToManyField('Account', blank=True, related_name="follower")
-    report = models.ManyToManyField('Account', blank=True, related_name="reporter")
 
     def __str__(self):
         return f"{self.user.username}"
@@ -85,9 +84,9 @@ class ReplyAnswerFile(models.Model):
 
 class Notification(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='notifications')
+    
     follow_notification = models.ManyToManyField(Question, blank=True, related_name='noti_follow')
     reply_notification = models.ManyToManyField(Answer, blank=True, related_name='noti_reply')
-
     qreport_notification = models.ManyToManyField(Question, blank=True, related_name='noti_qreport')
     areport_notification = models.ManyToManyField(Answer, blank=True, related_name='noti_areport')
     rreport_notification = models.ManyToManyField(ReplyAnswer, blank=True, related_name='noti_rreport')
@@ -97,6 +96,11 @@ class Notification(models.Model):
     qreport_notification_count = models.PositiveIntegerField(default=0)
     areport_notification_count = models.PositiveIntegerField(default=0)
     rreport_notification_count = models.PositiveIntegerField(default=0)
+
+    def alert_follow_notification(self):
+        dotcount = self.follow_notification.count()
+        count = self.follow_notification_count
+        return dotcount - count
 
     def alert_reply_notification(self):
         dotcount = self.reply_notification.count()
@@ -119,8 +123,7 @@ class Notification(models.Model):
         return dotcount - count
 
     def alert_notification(self):
-
-        count_noti = self.alert_reply_notification() + self.alert_qreport_notification() + self.alert_areport_notification() + self.alert_rreport_notification()
+        count_noti = self.alert_follow_notification() + self.alert_reply_notification() + self.alert_qreport_notification() + self.alert_areport_notification() + self.alert_rreport_notification()
         if count_noti != 0:
             return count_noti
         return 0

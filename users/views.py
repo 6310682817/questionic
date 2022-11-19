@@ -105,9 +105,6 @@ def signup(request):
     return render(request, 'users/signup.html')
 
 def userprofile(request, username):
-    me = User.objects.get(username=request.user.username)
-    myaccount = Account.objects.get(user=me)
-
     account = User.objects.filter(username=username).count()
     if account == 0 :
             return HttpResponse('User Not Found.', status = 400)
@@ -120,11 +117,14 @@ def userprofile(request, username):
     following = Account.objects.filter(follower=user.id).count()
     follower = Account.objects.filter(following=user.id).count()
 
-    status = Account.objects.filter(user=request.user.id, following=user.id).count()
-    if status == 0:
+    if request.user.is_authenticated:
+        status = Account.objects.filter(user=request.user.id, following=user.id).count()
+        if status == 0:
+            follow_status = 'Follow'
+        elif status == 1:
+            follow_status = 'Unfollow'
+    else:
         follow_status = 'Follow'
-    elif status == 1:
-        follow_status = 'Unfollow'
 
     if Question.objects.filter(asker=user_account).count() == 0:
         post_history = []
@@ -136,7 +136,6 @@ def userprofile(request, username):
         "username" : username,
         "following" : following,
         "follower" : follower,
-        "account": myaccount,
         'post_history' : post_history,
     })
 

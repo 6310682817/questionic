@@ -9,7 +9,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class AccountAdmin(admin.ModelAdmin):
     list_display = ("user", "image_profile")
-    filter_horizontal = ("fav_tag", "following", "report", "fav_question")
+    filter_horizontal = ("fav_tag", "following", "fav_question")
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ("title", "detail", "category", "grade", "date_asked", "asker", "faved", "answer_count")
