@@ -389,7 +389,7 @@ class QuestionicTestCaseIteration3(TestCase):
         response = c.get(reverse('questionic:delete', args=('reply', reply_answer.id, )))
         self.assertEqual(ReplyAnswer.objects.all().count(), 0)
 
-    def test_delete_valid_user_status_code(self):
+    def test_delete_invalid_user_status_code(self):
         """ status code should be 302 """
 
         user3 = User.objects.create_user(username='user3', password='1234')
