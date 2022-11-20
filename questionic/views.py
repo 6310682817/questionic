@@ -15,7 +15,6 @@ def index(request):
         question_lastest = Question.objects.all().order_by("-date_asked")[:10]
         question_popular = Question.objects.all().order_by('-faved')[:10]
 
-        print(question_popular)
         return render(request, 'questionic/index.html', {
             "question_lastest": question_lastest,
             "question_popular": question_popular,
@@ -178,14 +177,17 @@ def question(request, question_id):
     })
 
 def fav_question(request, question_id, status):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('users:login'))
+
     user = User.objects.get(username=request.user.username)
     account = Account.objects.get(user=user)
     if status == 'fav':
-            question = Question.objects.get(id=question_id)
-            account.fav_question.add(question)
-            account.save()
-            question.faved = question.fav_account.count()
-            question.save()
+        question = Question.objects.get(id=question_id)
+        account.fav_question.add(question)
+        account.save()
+        question.faved = question.fav_account.count()
+        question.save()
 
     elif status == 'unfav':
         question = Question.objects.get(id=question_id)
@@ -266,7 +268,6 @@ def search(request):
     grade = ""
     status = ""
     if request.method == "GET":
-        print(request.GET)
         question_search = Question.objects.all()
         if request.GET.get('search_keyword'):
             search_keyword = request.GET['search_keyword']

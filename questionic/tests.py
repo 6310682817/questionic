@@ -217,3 +217,51 @@ class QuestionicTestCaseIteration3(TestCase):
         
         notification_account1 = Notification.objects.get(account=account1)
         self.assertEqual(notification_account1.follow_notification.count(), 1)
+
+    def test_index_not_login_status_code(self):
+        """ index status code should be ok """
+
+        c = Client()
+        response = c.get(reverse('questionic:index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_index_login_status_code(self):
+        """ index status code should be ok """
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('questionic:index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_fav_question_not_login_status_code(self):
+        """ fav question status code should be 302 """
+
+        c = Client()
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        response = c.get(reverse('questionic:fav_question', args=(question.id, "fav")))
+        self.assertEqual(response.status_code, 302)
+
+    def test_fav_question_count(self):
+        """ question faved count should be 1 """
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        response = c.get(reverse('questionic:fav_question', args=(question.id, "fav", )))
+        self.assertEqual(question.fav_account.count(), 1)
+    
+    def test_unfav_question_count(self):
+        """ question faved count should be 0 """
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        response = c.get(reverse('questionic:fav_question', args=(question.id, "fav", )))
+        response = c.get(reverse('questionic:fav_question', args=(question.id, "unfav", )))
+        self.assertEqual(question.fav_account.count(), 0)
