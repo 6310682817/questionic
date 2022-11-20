@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Account, Question, QuestionFile, Notification, Answer, AnswerFile, ReplyAnswer
 from django.core.files.temp import NamedTemporaryFile
+import json
 
 # Create your tests here.
 
@@ -265,3 +266,131 @@ class QuestionicTestCaseIteration3(TestCase):
         response = c.get(reverse('questionic:fav_question', args=(question.id, "fav", )))
         response = c.get(reverse('questionic:fav_question', args=(question.id, "unfav", )))
         self.assertEqual(question.fav_account.count(), 0)
+
+    def test_search_answered_question(self):
+        """ search result count code should be 1 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        answer = Answer.objects.create(detail="detail", from_question=question, answerer=account1)
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.post(reverse('questionic:question', args=(question.id,)), data={
+            "Detail": "detail",
+            "comment": question.id
+        })
+        response = c.get(reverse('questionic:search'), data={
+            "search_keyword": "title",
+            "category": "category",
+            "grade": "grade",
+            "status": "answer"
+        })
+        self.assertEqual(response.context['question_search'].count(),1)
+
+    def test_search_unanswered_question(self):
+        """ search result count code should be 1 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        
+        response = c.get(reverse('questionic:search'), data={
+            "search_keyword": "title",
+            "category": "category",
+            "grade": "grade",
+            "status": "unanswer"
+        })
+        self.assertEqual(response.context['question_search'].count(),1)
+    
+    def test_search_answered_question_not_login(self):
+        """ search result count code should be 1 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        answer = Answer.objects.create(detail="detail", from_question=question, answerer=account1)
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.post(reverse('questionic:question', args=(question.id,)), data={
+            "Detail": "detail",
+            "comment": question.id
+        })
+        response = c.get(reverse('users:logout'))
+        response = c.get(reverse('questionic:search'), data={
+            "search_keyword": "title",
+            "category": "category",
+            "grade": "grade",
+            "status": "answer"
+        })
+        self.assertEqual(response.context['question_search'].count(),1)
+
+    def test_search_unanswered_question_not_login(self):
+        """ search result count code should be 1 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+
+        c = Client()
+        response = c.get(reverse('questionic:search'), data={
+            "search_keyword": "title",
+            "category": "category",
+            "grade": "grade",
+            "status": "unanswer"
+        })
+        self.assertEqual(response.context['question_search'].count(),1)
+
+    def test_delete_not_login_status_code(self):
+        """ delete status code should be 302 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+
+        c = Client()
+
+        response = c.get(reverse('questionic:delete', args=('question', question.id, )))
+        self.assertEqual(response.status_code, 302)
+
+    def test_delete_question(self):
+        """ question count should be 1 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('questionic:delete', args=('question', question.id, )))
+        self.assertEqual(Question.objects.all().count(), 0)
+
+    def test_delete_answer(self):
+        """ answer count should be 1 """
+
+        account = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account)
+        answer = Answer.objects.create(detail="detail", answerer=account, from_question=question)
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('questionic:delete', args=('answer', answer.id, )))
+        self.assertEqual(Answer.objects.all().count(), 0)
+    
+    def test_delete_reply_answer(self):
+        """ reply count should be 1 """
+
+        account = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account)
+        answer = Answer.objects.create(detail="detail", answerer=account, from_question=question)
+        reply_answer = ReplyAnswer.objects.create(detail="detail", reply_answerer=account, from_answer=answer)
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('questionic:delete', args=('reply', reply_answer.id, )))
+        self.assertEqual(ReplyAnswer.objects.all().count(), 0)
+
+
+
+
+    
+

@@ -254,8 +254,35 @@ def notification(request):
 
 def search(request):
     if not request.user.is_authenticated:
+        search_keyword = ""
+        category = ""
+        grade = ""
+        status = ""
+        if request.method == "GET":
+            question_search = Question.objects.all()
+            if request.GET.get('search_keyword'):
+                search_keyword = request.GET['search_keyword']
+                question_search = question_search.filter(Q(title__contains=search_keyword) | Q(detail__contains=search_keyword))
+            if request.GET.get('category'):
+                category = request.GET['category']
+                question_search = question_search.filter(category=category)
+            if request.GET.get('grade'):
+                grade = request.GET['grade']
+                question_search = question_search.filter(grade=grade)
+            if request.GET.get('status'):
+                status = request.GET['status']
+                if status == 'unanswer':
+                    question_search = question_search.filter(answer_count=0)
+                elif status == 'answer':
+                    question_search = question_search.exclude(answer_count=0)
+
         return render(request, 'questionic/search.html', {
-    })
+            "search_keyword": search_keyword,
+            "category": category,
+            "grade": grade,
+            "status": status,
+            "question_search": question_search,
+        })
 
     
     user = User.objects.get(username=request.user.username)
@@ -339,29 +366,35 @@ def report(request, type_report, report_id):
         
         return HttpResponseRedirect(reverse('questionic:question', args=(reply.from_answer.from_question.id, )))
 
-def delete_question(request, question_id):
+def delete(request, type, id):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('users:login'))
 
-
     user = User.objects.get(username=request.user.username)
-    account = Account.objects.get(user=user)
-    question = Question.objects.get(id=question_id)
-    
-    if not user.is_staff and not question.asker.user == user:
-        return HttpResponseRedirect(reverse('questionic:question', args=(question_id, )))
+    if type == "question":
+        question = Question.objects.get(id=id)
+        
+        if not user.is_staff and not question.asker.user == user:
+            return HttpResponseRedirect(reverse('questionic:question', args=(question.id, )))
 
-    for answer in Answer.objects.filter(from_question=question):
-        for reply_answer in ReplyAnswer.objects.filter(from_answer=answer):
+        question.delete()
+    elif type == "answer":
+        answer = Answer.objects.get(id=id)
+        
+        if not user.is_staff and not answer.answerer.user == user:
+            return HttpResponseRedirect(reverse('questionic:question', args=(answer.from_question.id, )))
 
-            for image in ReplyAnswerFile.objects.filter(reply_answer=reply_answer):
-                image.delete()
-            reply_answer.delete()
-        for image in AnswerFile.objects.filter(answer=answer):
-            image.delete()
         answer.delete()
+        return HttpResponseRedirect(reverse('questionic:question', args=(answer.from_question.id, )))
 
-    question.delete()
+    elif type == "reply":
+        reply_answer = ReplyAnswer.objects.get(id=id)
+        
+        if not user.is_staff and not reply_answer.reply_answerer.user == user:
+            return HttpResponseRedirect(reverse('questionic:question', args=(reply_answer.from_answer.from_question.id, )))
+
+        reply_answer.delete()
+        return HttpResponseRedirect(reverse('questionic:question', args=(reply_answer.from_answer.from_question.id, )))
 
     return HttpResponseRedirect(reverse('questionic:index'))
 
