@@ -389,8 +389,85 @@ class QuestionicTestCaseIteration3(TestCase):
         response = c.get(reverse('questionic:delete', args=('reply', reply_answer.id, )))
         self.assertEqual(ReplyAnswer.objects.all().count(), 0)
 
+    def test_delete_valid_user_status_code(self):
+        """ status code should be 302 """
 
+        user3 = User.objects.create_user(username='user3', password='1234')
+        account3 = Account.objects.create(user=user3, image_profile='./static/assets/default_profile/profile-pic (0).png')
 
+        account = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account)
+        answer = Answer.objects.create(detail="detail", answerer=account, from_question=question)
+        reply_answer = ReplyAnswer.objects.create(detail="detail", reply_answerer=account, from_answer=answer)
 
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "user3", "password": "1234"})
+
+        response = c.get(reverse('questionic:delete', args=('question', question.id, )))
+        self.assertEqual(response.status_code, 302)
+
+        response = c.get(reverse('questionic:delete', args=('answer', answer.id, )))
+        self.assertEqual(response.status_code, 302)
+
+        response = c.get(reverse('questionic:delete', args=('reply', reply_answer.id, )))
+        self.assertEqual(response.status_code, 302)
     
+    def test_not_login_notification_alert(self):
+        """ notification alert should be 0 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+
+        c = Client()
+        response = c.get(reverse('questionic:notification_alert'))
+
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'notification_alert': 0}
+        )
+    
+    def test_login_notification_alert(self):
+        """ notification alert should be 0 """
+
+        account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('questionic:notification_alert'))
+
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'notification_alert': 0}
+        )
+
+
+
+
+class QuestionicTestCaseOther(TestCase):
+    def setUp(self):
+        user1 = User.objects.create_superuser(username='admin', password='1234')
+        account1 = Account.objects.create(user=user1, image_profile='./static/assets/default_profile/profile-pic (0).png')
+
+        user2 = User.objects.create_superuser(username='user2', password='1234')
+        account2 = Account.objects.create(user=user2, image_profile='./static/assets/default_profile/profile-pic (0).png')
+
+        Notification.objects.create(account=account1)
+        Notification.objects.create(account=account2)
+    
+    def test_not_login_about_status_code(self):
+        """ status code should be 200 """
+
+        c = Client()
+        response = c.get(reverse('questionic:about'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_about_status_code(self):
+        """ status code should be 200 """
+
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('questionic:about'))
+        self.assertEqual(response.status_code, 200)
+
 
