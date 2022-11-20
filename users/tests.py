@@ -217,7 +217,7 @@ class UsersTestCaseIteration3(TestCase):
                                             "Save Password": "Save Password"})
         self.assertEqual(response.status_code, 302)
 
-    def test_login_username_is_already_taken_status_code(self):
+    def test_signup_username_is_already_taken_status_code(self):
         """ signup view's status code is ok """
 
         c = Client()
@@ -233,15 +233,18 @@ class UsersTestCaseIteration3(TestCase):
 
     def test_user_profile_status_code(self):
         """ user profile view's status code is ok """
+        """ reponse context post_history count is 1 """
 
         c = Client()
         account1 = Account.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
 
         response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
         response = c.get(reverse('users:userprofile', args=("admin",)))
         response = c.get(reverse('users:index'))
-
-        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
-        response = c.get(reverse('users:userprofile', args=(account1.user.username,)))
-        response = c.get(reverse('users:index'))
         self.assertEqual(response.status_code, 200)
+
+        response = c.get(reverse('users:logout'))
+        response = c.post(reverse('users:login'), {"username" : "user2", "password": "1234"})
+        response = c.get(reverse('users:userprofile', args=(account1.user.username,)))
+        self.assertEqual(response.context['post_history'].count(), 1)
