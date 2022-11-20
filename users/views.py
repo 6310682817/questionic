@@ -163,7 +163,7 @@ def editprofile(request):
 
     notification_alert = notification.alert_reply_notification()
     if request.method == "POST":
-        if request.POST.get("password"):
+        if request.POST.get("Save Password"):
             pmessage = ''
 
             password = request.POST["password"]
@@ -181,10 +181,8 @@ def editprofile(request):
                 })
             user.set_password(password)
             user.save()
-            print(password)
-            print(user.password)
 
-        elif request.POST.get("firstname"):
+        elif request.POST.get("Save Profile"):
             image = request.FILES.getlist("image")
 
             user.first_name = request.POST["firstname"]

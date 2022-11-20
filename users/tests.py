@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from questionic.models import Account, Notification
+from django.core.files.temp import NamedTemporaryFile
 
 # Create your tests here.
 
@@ -157,3 +158,62 @@ class UsersTestCaseIteration3(TestCase):
         c.get(reverse('users:follow', args=("Follow", "user2",)))
         c.get(reverse('users:follow', args=("Unfollow", "user2",)))
         self.assertEqual(account2.follower.count(), 0)
+
+    def test_not_login_edit_profile_status_code(self):
+        """ not login edit profile's status code is 302 """
+
+        c = Client()
+        response = c.get(reverse('users:editprofile'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_login_edit_profile_status_code(self):
+        """ login edit profile's status code is 200 """
+
+        c = Client()
+        response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('users:editprofile'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_edit_profile_status_code(self):
+        """ edit profile's status code is 302 """
+
+        c = Client()
+        image = NamedTemporaryFile()
+        response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.post(reverse('users:editprofile'), {"firstname" : "test", 
+                                            "lastname ": "test", 
+                                            "email": "test@test.com",
+                                            "image": image,
+                                            "Save Profile": "Save Profile"})
+        self.assertEqual(response.status_code, 302)
+
+    def test_edit_password_empty_status_code(self):
+        """ edit profile empty's status code is 200 """
+        
+        c = Client()
+        response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.post(reverse('users:editprofile'), {"password": '',
+                                            "password confirmation ": '',
+                                            "Save Password": "Save Password"})
+        self.assertEqual(response.status_code, 200)
+    
+    def test_edit_password_not_same_status_code(self):
+        """ edit profile not same's status code is 200 """
+
+        c = Client()
+        response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.post(reverse('users:editprofile'), {"password" : "test", 
+                                            "password confirmation ": "test123",
+                                            "Save Password": "Save Password"})
+        self.assertEqual(response.status_code, 200)
+
+    def test_edit_password_valid_status_code(self):
+        """ edit profile valid's status code is 302 """
+
+        c = Client()
+        response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.post(reverse('users:editprofile'), {"password" : "test", 
+                                            "password confirmation ": "test",
+                                            "Save Password": "Save Password"})
+        self.assertEqual(response.status_code, 302)
+    
