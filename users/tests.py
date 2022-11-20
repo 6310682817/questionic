@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
-from questionic.models import Account, Notification
+from questionic.models import Account, Notification, Question
 from django.core.files.temp import NamedTemporaryFile
 
 # Create your tests here.
@@ -216,4 +216,32 @@ class UsersTestCaseIteration3(TestCase):
                                             "password confirmation ": "test",
                                             "Save Password": "Save Password"})
         self.assertEqual(response.status_code, 302)
-    
+
+    def test_login_username_is_already_taken_status_code(self):
+        """ signup view's status code is ok """
+
+        c = Client()
+        response = c.post(reverse('users:signup'), {
+            "username" : "user2",
+            "password": "1234",
+            "password confirmation": "12",
+            "email": "",
+            "firstname": "",
+            "lastname": ""
+        })
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_profile_status_code(self):
+        """ user profile view's status code is ok """
+
+        c = Client()
+        account1 = Account.objects.first()
+
+        response = c.post(reverse('users:login'), {"username" : "admin", "password": "1234"})
+        response = c.get(reverse('users:userprofile', args=("admin",)))
+        response = c.get(reverse('users:index'))
+
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        response = c.get(reverse('users:userprofile', args=(account1.user.username,)))
+        response = c.get(reverse('users:index'))
+        self.assertEqual(response.status_code, 200)
