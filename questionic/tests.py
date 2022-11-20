@@ -440,9 +440,38 @@ class QuestionicTestCaseIteration3(TestCase):
             str(response.content, encoding='utf8'),
             {'notification_alert': 0}
         )
+    
+    def test_notification_not_staff(self):
+        """ notification response context should be 6 """
 
+        user3 = User.objects.create_user(username='user3', password='1234')
+        account3 = Account.objects.create(user=user3, image_profile='./static/assets/default_profile/profile-pic (0).png')
+        notification3 =  Notification.objects.create(account=account3)
+        
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "user3", "password": "1234"})
+        response = c.get(reverse('questionic:notification'))
+        self.assertEqual(response.context.get('rreport_notifications'), None)
 
+    def test_reply_notification_form_other_user(self):
 
+        account1 = Account.objects.first()
+        notification1 =  Notification.objects.first()
+        question = Question.objects.create(title="title", detail="detail", category="category", grade="grade", asker=account1)
+        
+        user3 = User.objects.create_user(username='user3', password='1234')
+        account3 = Account.objects.create(user=user3, image_profile='./static/assets/default_profile/profile-pic (0).png')
+        notification3 =  Notification.objects.create(account=account3)
+        
+        c = Client()
+        c.post(reverse('users:login'), {"username" : "user3", "password": "1234"})
+        image = NamedTemporaryFile()
+        response = c.post(reverse('questionic:question', args=(question.id,)), {
+            "Detail": "Detail",
+            "comment": question.id,
+            "images": image
+        })
+        self.assertEqual(Notification.objects.filter(account=account1).count(), 1)
 
 class QuestionicTestCaseOther(TestCase):
     def setUp(self):
